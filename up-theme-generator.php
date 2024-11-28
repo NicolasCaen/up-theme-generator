@@ -197,16 +197,35 @@ class UPThemeGenerator {
                             </td>
                         </tr>
                         <tr>
-                            <th>Tailles de police</th>
+                            <th>Configuration des polices</th>
                             <td>
                                 <div id="font-sizes">
                                     <div class="font-size-item">
-                                        <input type="text" name="font_names[]" placeholder="Nom (ex: small)">
-                                        <input type="text" name="font_sizes[]" placeholder="Taille (ex: 16px)">
+                                        <div class="font-size-name">
+                                            <input type="text" name="font_names[]" placeholder="Nom (ex: small)">
+                                        </div>
+                                        <div class="font-size-values">
+                                            <div class="font-size-value">
+                                                <label>Défaut</label>
+                                                <input type="text" name="font_sizes[]" placeholder="ex: clamp(1rem, 2vw, 1.5rem)">
+                                            </div>
+                                            <div class="font-size-fluid">
+                                                <label>Min</label>
+                                                <input type="text" name="font_sizes_min[]" placeholder="ex: 1rem">
+                                            </div>
+                                            <div class="font-size-fluid">
+                                                <label>Max</label>
+                                                <input type="text" name="font_sizes_max[]" placeholder="ex: 1.5rem">
+                                            </div>
+                                        </div>
                                         <button type="button" class="remove-font">Supprimer</button>
                                     </div>
                                 </div>
                                 <button type="button" id="add-font-size" class="button">Ajouter une taille</button>
+                                <p class="description">
+                                    Vous pouvez utiliser des valeurs fixes (px, rem) ou des valeurs fluides avec clamp().
+                                    Pour les valeurs fluides, remplissez les champs Min et Max.
+                                </p>
                             </td>
                         </tr>
                     </table>
@@ -325,6 +344,7 @@ class UPThemeGenerator {
                     'palette' => array()
                 ),
                 'typography' => array(
+                    'fluid' => true,
                     'fontSizes' => array()
                 )
             )
@@ -345,15 +365,25 @@ class UPThemeGenerator {
             }
         }
 
-        // Ajout des tailles de police
+        // Ajout des tailles de police avec support fluid
         if (!empty($theme_data['font_names'])) {
             foreach ($theme_data['font_names'] as $index => $name) {
-                if (!empty($name) && !empty($theme_data['font_sizes'][$index])) {
-                    $theme_json['settings']['typography']['fontSizes'][] = array(
+                if (!empty($name)) {
+                    $font_size = array(
                         'slug' => sanitize_title($name),
                         'name' => $name,
-                        'size' => $theme_data['font_sizes'][$index]
+                        'size' => $theme_data['font_sizes'][$index],
                     );
+
+                    // Ajout des valeurs fluid si présentes
+                    if (!empty($theme_data['font_sizes_min'][$index])) {
+                        $font_size['fluid'] = array(
+                            'min' => $theme_data['font_sizes_min'][$index],
+                            'max' => $theme_data['font_sizes_max'][$index] ?? $theme_data['font_sizes'][$index]
+                        );
+                    }
+
+                    $theme_json['settings']['typography']['fontSizes'][] = $font_size;
                 }
             }
         }

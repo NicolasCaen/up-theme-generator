@@ -74,8 +74,23 @@ jQuery(document).ready(function($) {
     $('#add-font-size').on('click', function() {
         const template = `
             <div class="font-size-item">
-                <input type="text" name="font_names[]" placeholder="Nom (ex: small)">
-                <input type="text" name="font_sizes[]" placeholder="Taille (ex: 16px)">
+                <div class="font-size-name">
+                    <input type="text" name="font_names[]" placeholder="Nom (ex: small)">
+                </div>
+                <div class="font-size-values">
+                    <div class="font-size-value">
+                        <label>Défaut</label>
+                        <input type="text" name="font_sizes[]" placeholder="ex: clamp(1rem, 2vw, 1.5rem)">
+                    </div>
+                    <div class="font-size-fluid">
+                        <label>Min</label>
+                        <input type="text" name="font_sizes_min[]" placeholder="ex: 1rem">
+                    </div>
+                    <div class="font-size-fluid">
+                        <label>Max</label>
+                        <input type="text" name="font_sizes_max[]" placeholder="ex: 1.5rem">
+                    </div>
+                </div>
                 <button type="button" class="remove-font">Supprimer</button>
             </div>
         `;
@@ -212,16 +227,28 @@ jQuery(document).ready(function($) {
             themeData.typography.fontSizes.forEach(fontSize => {
                 const template = `
                     <div class="font-size-item">
-                        <input type="text" name="font_names[]" value="${fontSize.name}" placeholder="Nom (ex: small)">
-                        <input type="text" name="font_sizes[]" value="${fontSize.size}" placeholder="Taille (ex: 16px)">
+                        <div class="font-size-name">
+                            <input type="text" name="font_names[]" value="${fontSize.name}" placeholder="Nom (ex: small)">
+                        </div>
+                        <div class="font-size-values">
+                            <div class="font-size-value">
+                                <label>Défaut</label>
+                                <input type="text" name="font_sizes[]" value="${fontSize.size}" placeholder="ex: clamp(1rem, 2vw, 1.5rem)">
+                            </div>
+                            <div class="font-size-fluid">
+                                <label>Min</label>
+                                <input type="text" name="font_sizes_min[]" value="${fontSize.fluid ? fontSize.fluid.min : ''}" placeholder="ex: 1rem">
+                            </div>
+                            <div class="font-size-fluid">
+                                <label>Max</label>
+                                <input type="text" name="font_sizes_max[]" value="${fontSize.fluid ? fontSize.fluid.max : ''}" placeholder="ex: 1.5rem">
+                            </div>
+                        </div>
                         <button type="button" class="remove-font">Supprimer</button>
                     </div>
                 `;
                 $('#font-sizes').append(template);
             });
-        } else {
-            // Ajouter une ligne vide si aucune taille n'existe
-            $('#add-font-size').trigger('click');
         }
 
         // Templates

@@ -93,3 +93,60 @@
     background-color: #f0f0f0;
     cursor: not-allowed;
 }
+
+.font-size-item {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    align-items: flex-start;
+    margin-bottom: 15px;
+    padding: 15px;
+    background: #f9f9f9;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+}
+
+.font-size-name {
+    flex: 0 0 200px;
+}
+
+.font-size-values {
+    flex: 1;
+    display: flex;
+    gap: 15px;
+    align-items: flex-start;
+}
+
+.font-size-value,
+.font-size-fluid {
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+}
+
+.font-size-value input,
+.font-size-fluid input {
+    width: 150px;
+}
+
+.font-size-value label,
+.font-size-fluid label {
+    font-size: 12px;
+    color: #666;
+}
+
+.remove-font {
+    align-self: flex-start;
+}
+
+.description {
+    margin-top: 10px;
+    font-style: italic;
+    color: #666;
+}
+
+/* Styles pour les champs désactivés en mode mise à jour */
+.operation-update .font-size-item input:disabled {
+    background-color: #f0f0f0;
+    cursor: not-allowed;
+}

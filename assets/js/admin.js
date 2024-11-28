@@ -18,6 +18,8 @@ jQuery(document).ready(function($) {
 
     // Fonction pour charger les données d'un thème existant
     function loadExistingThemeData(themeSlug) {
+        $('.form-section').addClass('loading');
+        
         $.ajax({
             url: upThemeGenerator.ajaxurl,
             type: 'POST',
@@ -29,7 +31,15 @@ jQuery(document).ready(function($) {
             success: function(response) {
                 if (response.success) {
                     populateFormWithThemeData(response.data);
+                } else {
+                    alert('Erreur lors du chargement des données du thème : ' + response.data);
                 }
+            },
+            error: function() {
+                alert('Erreur de communication avec le serveur');
+            },
+            complete: function() {
+                $('.form-section').removeClass('loading');
             }
         });
     }
@@ -169,9 +179,17 @@ jQuery(document).ready(function($) {
     });
 
     function populateFormWithThemeData(themeData) {
-        // Remplir les couleurs
+        // Informations de base
+        if (themeData.basic) {
+            $('#theme_name').val(themeData.basic.name);
+            $('#theme_description').val(themeData.basic.description);
+            $('#theme_author').val(themeData.basic.author);
+            $('#theme_slug').val(themeData.basic.slug);
+        }
+
+        // Palette de couleurs
         $('#color-palette').empty();
-        if (themeData.colors) {
+        if (themeData.colors && themeData.colors.length > 0) {
             themeData.colors.forEach(color => {
                 const template = `
                     <div class="color-item">
@@ -183,8 +201,48 @@ jQuery(document).ready(function($) {
                 `;
                 $('#color-palette').append(template);
             });
+        } else {
+            // Ajouter une ligne vide si aucune couleur n'existe
+            $('#add-color').trigger('click');
         }
 
-        // Remplir les autres données du formulaire...
+        // Tailles de police
+        $('#font-sizes').empty();
+        if (themeData.typography && themeData.typography.fontSizes) {
+            themeData.typography.fontSizes.forEach(fontSize => {
+                const template = `
+                    <div class="font-size-item">
+                        <input type="text" name="font_names[]" value="${fontSize.name}" placeholder="Nom (ex: small)">
+                        <input type="text" name="font_sizes[]" value="${fontSize.size}" placeholder="Taille (ex: 16px)">
+                        <button type="button" class="remove-font">Supprimer</button>
+                    </div>
+                `;
+                $('#font-sizes').append(template);
+            });
+        } else {
+            // Ajouter une ligne vide si aucune taille n'existe
+            $('#add-font-size').trigger('click');
+        }
+
+        // Templates
+        if (themeData.templates) {
+            $('input[name="templates[]"]').each(function() {
+                $(this).prop('checked', themeData.templates.includes($(this).val()));
+            });
+        }
+
+        // Parts
+        if (themeData.parts) {
+            $('input[name="parts[]"]').each(function() {
+                $(this).prop('checked', themeData.parts.includes($(this).val()));
+            });
+        }
     }
+
+    // Modifiez l'événement de changement du select de thème
+    $('#existing_theme').on('change', function() {
+        if ($('#operation_type').val() === 'update') {
+            loadExistingThemeData($(this).val());
+        }
+    });
 });

@@ -70,3 +70,26 @@
 .action-text-update {
     display: none;
 }
+
+.form-section.loading {
+    position: relative;
+    pointer-events: none;
+}
+
+.form-section.loading::after {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(255, 255, 255, 0.7) url('../images/loading.gif') center no-repeat;
+    z-index: 1;
+}
+
+/* Styles pour désactiver les champs en mode mise à jour */
+.operation-update #theme_name,
+.operation-update #theme_slug {
+    background-color: #f0f0f0;
+    cursor: not-allowed;
+}

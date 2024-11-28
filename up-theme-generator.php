@@ -22,6 +22,66 @@ class UPThemeGenerator {
         add_action('admin_menu', array($this, 'add_admin_menu'));
         add_action('admin_enqueue_scripts', array($this, 'enqueue_admin_assets'));
         add_action('wp_ajax_generate_theme', array($this, 'generate_theme'));
+        add_action('wp_ajax_get_theme_data', function() {
+            check_ajax_referer('up_theme_generator_nonce', 'nonce');
+            
+            $theme_slug = sanitize_text_field($_POST['theme_slug']);
+            $theme = wp_get_theme($theme_slug);
+            
+            if (!$theme->exists()) {
+                wp_send_json_error('Thème non trouvé');
+            }
+            
+            $theme_dir = $theme->get_stylesheet_directory();
+            $theme_data = array(
+                'basic' => array(
+                    'name' => $theme->get('Name'),
+                    'description' => $theme->get('Description'),
+                    'author' => $theme->get('Author'),
+                    'slug' => $theme_slug
+                ),
+                'colors' => array(),
+                'typography' => array(),
+                'templates' => array(),
+                'parts' => array()
+            );
+            
+            // Lire theme.json
+            $theme_json_path = $theme_dir . '/theme.json';
+            if (file_exists($theme_json_path)) {
+                $theme_json = json_decode(file_get_contents($theme_json_path), true);
+                
+                // Récupérer la palette de couleurs
+                if (isset($theme_json['settings']['color']['palette'])) {
+                    $theme_data['colors'] = $theme_json['settings']['color']['palette'];
+                }
+                
+                // Récupérer les tailles de police
+                if (isset($theme_json['settings']['typography']['fontSizes'])) {
+                    $theme_data['typography']['fontSizes'] = $theme_json['settings']['typography']['fontSizes'];
+                }
+            }
+            
+            // Récupérer les templates
+            $templates_dir = $theme_dir . '/templates';
+            if (is_dir($templates_dir)) {
+                $templates = glob($templates_dir . '/*.html');
+                foreach ($templates as $template) {
+                    $theme_data['templates'][] = basename($template, '.html');
+                }
+            }
+            
+            // Récupérer les parts
+            $parts_dir = $theme_dir . '/parts';
+            if (is_dir($parts_dir)) {
+                $parts = glob($parts_dir . '/*.html');
+                foreach ($parts as $part) {
+                    $theme_data['parts'][] = basename($part, '.html');
+                }
+            }
+            
+            wp_send_json_success($theme_data);
+        });
     }
 
     public function add_admin_menu() {

@@ -1,0 +1,72 @@
+.up-theme-form .form-section {
+    background: #fff;
+    padding: 20px;
+    margin-bottom: 20px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    position: relative;
+}
+
+.up-theme-form .form-section h2 {
+    margin-top: 0;
+    padding-bottom: 10px;
+    border-bottom: 1px solid #eee;
+}
+
+.color-item,
+.font-size-item {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 10px;
+    align-items: center;
+}
+
+.color-item input[type="text"],
+.font-size-item input[type="text"] {
+    width: 200px;
+}
+
+.remove-color,
+.remove-font {
+    color: #dc3232;
+    border: 1px solid #dc3232;
+    background: transparent;
+    cursor: pointer;
+    padding: 4px 8px;
+    border-radius: 3px;
+}
+
+.form-actions {
+    margin-top: 20px;
+}
+
+#theme-description {
+    width: 100%;
+    min-height: 100px;
+}
+
+.color-item input[name="color_slugs[]"] {
+    width: 150px;
+    margin-right: 10px;
+}
+
+#existing_theme_row select {
+    width: 300px;
+}
+
+.form-section.loading::after {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(255, 255, 255, 0.7);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.action-text-update {
+    display: none;
+}

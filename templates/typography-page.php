@@ -33,7 +33,7 @@ $nonce = wp_create_nonce('up_theme_generator_nonce');
             <div id="font-selectors">
                 <div class="font-selector">
                     <label>Police 1 (Primary) :</label>
-                    <select class="font-select" required>
+                    <select class="font-select font-family-select" required>
                         <option value="">Choisir une police</option>
                         <?php foreach ($fonts as $font) : ?>
                             <option value="<?php echo esc_attr($font['name']); ?>">
@@ -77,91 +77,4 @@ $nonce = wp_create_nonce('up_theme_generator_nonce');
     border: 1px solid #ccc;
     border-radius: 4px;
 }
-</style>
-
-<script>
-jQuery(document).ready(function($) {
-    let fontCount = 1;
-    const maxFonts = 3;
-
-    $('#add-font').on('click', function() {
-        if (fontCount >= maxFonts) {
-            alert('Maximum 3 polices autorisées');
-            return;
-        }
-
-        fontCount++;
-        const newSelector = `
-            <div class="font-selector">
-                <label>Police ${fontCount} (${fontCount === 2 ? 'Secondary' : 'Tertiary'}) :</label>
-                <select class="font-select" required>
-                    <option value="">Choisir une police</option>
-                    <?php foreach ($fonts as $font) : ?>
-                        <option value="<?php echo esc_attr($font['name']); ?>">
-                            <?php echo esc_html($font['name']); ?>
-                        </option>
-                    <?php endforeach; ?>
-                </select>
-                <button type="button" class="button remove-font">Supprimer</button>
-            </div>
-        `;
-        $('#font-selectors').append(newSelector);
-
-        if (fontCount >= maxFonts) {
-            $('#add-font').prop('disabled', true);
-        }
-    });
-
-    $(document).on('click', '.remove-font', function() {
-        $(this).closest('.font-selector').remove();
-        fontCount--;
-        $('#add-font').prop('disabled', false);
-    });
-
-    $('#save-preset').on('click', function() {
-        const theme = $('#theme-selector').val();
-        const presetName = $('#preset-name').val();
-        const fonts = [];
-
-        if (!theme || !presetName) {
-            alert('Veuillez remplir tous les champs requis');
-            return;
-        }
-
-        $('.font-select').each(function() {
-            const fontValue = $(this).val();
-            if (fontValue) {
-                fonts.push(fontValue);
-            }
-        });
-
-        if (fonts.length === 0) {
-            alert('Veuillez sélectionner au moins une police');
-            return;
-        }
-
-        $.ajax({
-            url: '<?php echo admin_url('admin-ajax.php'); ?>',
-            type: 'POST',
-            data: {
-                action: 'save_typography_preset',
-                nonce: '<?php echo $nonce; ?>',
-                theme: theme,
-                preset_name: presetName,
-                fonts: fonts
-            },
-            success: function(response) {
-                if (response.success) {
-                    alert('Preset créé avec succès !');
-                    location.reload();
-                } else {
-                    alert('Erreur : ' + response.data);
-                }
-            },
-            error: function() {
-                alert('Erreur lors de la création du preset');
-            }
-        });
-    });
-});
-</script> 
+</style> 

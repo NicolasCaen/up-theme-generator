@@ -33,6 +33,8 @@ class UPThemeGenerator {
             }
             
             $theme_dir = $theme->get_stylesheet_directory();
+            error_log('Dossier du thème: ' . $theme_dir);
+            
             $theme_data = array(
                 'basic' => array(
                     'name' => $theme->get('Name'),
@@ -41,45 +43,80 @@ class UPThemeGenerator {
                     'slug' => $theme_slug
                 ),
                 'colors' => array(),
-                'typography' => array(),
+                'typography' => array(
+                    'fontSizes' => array()
+                ),
                 'templates' => array(),
                 'parts' => array()
             );
             
             // Lire theme.json
             $theme_json_path = $theme_dir . '/theme.json';
+            error_log('Recherche du fichier theme.json: ' . $theme_json_path);
+            
             if (file_exists($theme_json_path)) {
                 $theme_json = json_decode(file_get_contents($theme_json_path), true);
+                error_log('Contenu theme.json: ' . print_r($theme_json, true));
                 
                 // Récupérer la palette de couleurs
                 if (isset($theme_json['settings']['color']['palette'])) {
-                    $theme_data['colors'] = $theme_json['settings']['color']['palette'];
+                    foreach ($theme_json['settings']['color']['palette'] as $color) {
+                        $theme_data['colors'][] = array(
+                            'name' => $color['name'],
+                            'slug' => $color['slug'],
+                            'color' => $color['color']
+                        );
+                    }
                 }
                 
                 // Récupérer les tailles de police
                 if (isset($theme_json['settings']['typography']['fontSizes'])) {
-                    $theme_data['typography']['fontSizes'] = $theme_json['settings']['typography']['fontSizes'];
+                    foreach ($theme_json['settings']['typography']['fontSizes'] as $fontSize) {
+                        $font_data = array(
+                            'name' => $fontSize['name'],
+                            'size' => $fontSize['size']
+                        );
+                        
+                        // Ajouter les valeurs fluid si elles existent
+                        if (isset($fontSize['fluid'])) {
+                            $font_data['fluid'] = array(
+                                'min' => $fontSize['fluid']['min'],
+                                'max' => $fontSize['fluid']['max']
+                            );
+                        }
+                        
+                        $theme_data['typography']['fontSizes'][] = $font_data;
+                    }
                 }
+            } else {
+                error_log('Fichier theme.json non trouvé');
             }
             
             // Récupérer les templates
             $templates_dir = $theme_dir . '/templates';
             if (is_dir($templates_dir)) {
-                $templates = glob($templates_dir . '/*.html');
-                foreach ($templates as $template) {
-                    $theme_data['templates'][] = basename($template, '.html');
+                $files = glob($templates_dir . '/*.html');
+                if ($files) {
+                    foreach ($files as $file) {
+                        $template_name = basename($file, '.html');
+                        $theme_data['templates'][] = $template_name;
+                    }
                 }
             }
             
             // Récupérer les parts
             $parts_dir = $theme_dir . '/parts';
             if (is_dir($parts_dir)) {
-                $parts = glob($parts_dir . '/*.html');
-                foreach ($parts as $part) {
-                    $theme_data['parts'][] = basename($part, '.html');
+                $files = glob($parts_dir . '/*.html');
+                if ($files) {
+                    foreach ($files as $file) {
+                        $part_name = basename($file, '.html');
+                        $theme_data['parts'][] = $part_name;
+                    }
                 }
             }
             
+            error_log('Données finales envoyées: ' . print_r($theme_data, true));
             wp_send_json_success($theme_data);
         });
     }
@@ -123,8 +160,17 @@ class UPThemeGenerator {
     }
 
     public function render_admin_page() {
-        // Récupération des thèmes existants
-        $themes = wp_get_themes();
+        // Récupération de tous les thèmes installés en excluant le dossier backups
+        $all_themes = wp_get_themes(array('errors' => null));
+        $themes = array();
+        
+        // Filtrer les thèmes pour exclure le dossier backups
+        foreach ($all_themes as $theme_slug => $theme) {
+            if (strpos($theme_slug, 'backups') === false) {
+                $themes[$theme_slug] = $theme;
+            }
+        }
+        
         ?>
         <div class="wrap">
             <h1>Générateur de Thème FSE</h1>
@@ -146,12 +192,20 @@ class UPThemeGenerator {
                             <th>Thème à mettre à jour</th>
                             <td>
                                 <select name="existing_theme" id="existing_theme">
-                                    <?php foreach ($themes as $theme_slug => $theme): ?>
+                                    <?php 
+                                    foreach ($themes as $theme_slug => $theme) {
+                                        $theme_name = $theme->get('Name');
+                                        ?>
                                         <option value="<?php echo esc_attr($theme_slug); ?>">
-                                            <?php echo esc_html($theme->get('Name')); ?>
+                                            <?php echo esc_html($theme_name . ' (' . $theme_slug . ')'); ?>
                                         </option>
-                                    <?php endforeach; ?>
+                                        <?php
+                                    }
+                                    ?>
                                 </select>
+                                <p class="description">
+                                    <?php echo count($themes); ?> thèmes disponibles
+                                </p>
                             </td>
                         </tr>
                     </table>
@@ -285,10 +339,30 @@ class UPThemeGenerator {
                 wp_send_json_error('Le thème sélectionné n\'existe pas.');
             }
             
-            // Sauvegarder une copie de sauvegarde
-            $backup_dir = $theme_dir . '_backup_' . date('Y-m-d_H-i-s');
-            if (!rename($theme_dir, $backup_dir)) {
+            // Créer le dossier de backup s'il n'existe pas
+            $backup_base_dir = WP_CONTENT_DIR . '/themes/backups';
+            if (!is_dir($backup_base_dir)) {
+                if (!mkdir($backup_base_dir, 0755, true)) {
+                    wp_send_json_error('Impossible de créer le dossier de sauvegarde.');
+                }
+            }
+            
+            // Créer un dossier daté pour cette sauvegarde
+            $backup_dir = $backup_base_dir . '/' . $theme_slug . '_' . date('Y-m-d_H-i-s');
+            
+            // Copier le thème dans le dossier de backup
+            if (!$this->recursive_copy($theme_dir, $backup_dir)) {
                 wp_send_json_error('Impossible de créer une sauvegarde du thème.');
+            }
+            
+            // Nettoyer le dossier du thème original
+            $this->recursive_remove_directory($theme_dir);
+            
+            // Recréer le dossier du thème
+            if (!mkdir($theme_dir, 0755, true)) {
+                // En cas d'erreur, restaurer depuis la sauvegarde
+                $this->recursive_copy($backup_dir, $theme_dir);
+                wp_send_json_error('Impossible de préparer le dossier du thème.');
             }
         } else {
             $theme_dir = WP_CONTENT_DIR . '/themes/' . sanitize_file_name($theme_data['theme_slug']);
@@ -310,8 +384,9 @@ class UPThemeGenerator {
             ));
         } catch (Exception $e) {
             // En cas d'erreur, restaurer la sauvegarde si c'était une mise à jour
-            if ($operation_type === 'update' && isset($backup_dir)) {
-                rename($backup_dir, $theme_dir);
+            if ($operation_type === 'update') {
+                $this->recursive_remove_directory($theme_dir);
+                $this->recursive_copy($backup_dir, $theme_dir);
             }
             wp_send_json_error($e->getMessage());
         }
@@ -492,6 +567,61 @@ class UPThemeGenerator {
         }
 
         file_put_contents($theme_dir . '/parts/' . $part_name . '.html', $content);
+    }
+
+    private function recursive_copy($src, $dst) {
+        $dir = opendir($src);
+        if (!$dir) {
+            return false;
+        }
+        
+        if (!is_dir($dst)) {
+            if (!mkdir($dst, 0755, true)) {
+                return false;
+            }
+        }
+        
+        while (($file = readdir($dir)) !== false) {
+            if ($file === '.' || $file === '..') {
+                continue;
+            }
+            
+            $src_file = $src . '/' . $file;
+            $dst_file = $dst . '/' . $file;
+            
+            if (is_dir($src_file)) {
+                if (!$this->recursive_copy($src_file, $dst_file)) {
+                    return false;
+                }
+            } else {
+                if (!copy($src_file, $dst_file)) {
+                    return false;
+                }
+            }
+        }
+        
+        closedir($dir);
+        return true;
+    }
+
+    private function recursive_remove_directory($dir) {
+        if (!is_dir($dir)) {
+            return;
+        }
+        
+        $files = array_diff(scandir($dir), array('.', '..'));
+        
+        foreach ($files as $file) {
+            $path = $dir . '/' . $file;
+            
+            if (is_dir($path)) {
+                $this->recursive_remove_directory($path);
+            } else {
+                unlink($path);
+            }
+        }
+        
+        rmdir($dir);
     }
 }
 

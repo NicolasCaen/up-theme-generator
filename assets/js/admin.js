@@ -194,6 +194,8 @@ jQuery(document).ready(function($) {
     });
 
     function populateFormWithThemeData(themeData) {
+        console.log('Données reçues pour pré-remplissage:', themeData);
+
         // Informations de base
         if (themeData.basic) {
             $('#theme_name').val(themeData.basic.name);
@@ -206,6 +208,7 @@ jQuery(document).ready(function($) {
         $('#color-palette').empty();
         if (themeData.colors && themeData.colors.length > 0) {
             themeData.colors.forEach(color => {
+                console.log('Ajout de la couleur:', color);
                 const template = `
                     <div class="color-item">
                         <input type="text" name="color_names[]" value="${color.name}" placeholder="Nom de la couleur">
@@ -223,8 +226,9 @@ jQuery(document).ready(function($) {
 
         // Tailles de police
         $('#font-sizes').empty();
-        if (themeData.typography && themeData.typography.fontSizes) {
+        if (themeData.typography && themeData.typography.fontSizes && themeData.typography.fontSizes.length > 0) {
             themeData.typography.fontSizes.forEach(fontSize => {
+                console.log('Ajout de la taille de police:', fontSize);
                 const template = `
                     <div class="font-size-item">
                         <div class="font-size-name">
@@ -249,19 +253,24 @@ jQuery(document).ready(function($) {
                 `;
                 $('#font-sizes').append(template);
             });
+        } else {
+            // Ajouter une ligne vide si aucune taille n'existe
+            $('#add-font-size').trigger('click');
         }
 
         // Templates
-        if (themeData.templates) {
-            $('input[name="templates[]"]').each(function() {
-                $(this).prop('checked', themeData.templates.includes($(this).val()));
+        if (themeData.templates && themeData.templates.length > 0) {
+            $('input[name="templates[]"]').prop('checked', false);
+            themeData.templates.forEach(template => {
+                $(`input[name="templates[]"][value="${template}"]`).prop('checked', true);
             });
         }
 
         // Parts
-        if (themeData.parts) {
-            $('input[name="parts[]"]').each(function() {
-                $(this).prop('checked', themeData.parts.includes($(this).val()));
+        if (themeData.parts && themeData.parts.length > 0) {
+            $('input[name="parts[]"]').prop('checked', false);
+            themeData.parts.forEach(part => {
+                $(`input[name="parts[]"][value="${part}"]`).prop('checked', true);
             });
         }
     }

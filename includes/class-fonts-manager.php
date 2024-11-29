@@ -132,4 +132,100 @@ class FontsManager {
         }
         closedir($dir);
     }
+
+    /**
+     * Récupère les presets de typographie disponibles pour un thème
+     */
+    public function get_theme_presets() {
+        // Vérification du nonce
+        if (!check_ajax_referer('up_theme_generator_nonce', 'nonce', false)) {
+            wp_send_json_error('Nonce invalide');
+            return;
+        }
+
+        // Vérification des permissions
+        if (!current_user_can('manage_options')) {
+            wp_send_json_error('Permission refusée');
+            return;
+        }
+
+        // Récupération du thème sélectionné
+        $theme_slug = sanitize_text_field($_POST['theme']);
+        if (empty($theme_slug)) {
+            wp_send_json_error('Thème non spécifié');
+            return;
+        }
+
+        try {
+            // Chemin vers le dossier des presets de typographie
+            $typography_path = WP_CONTENT_DIR . '/themes/' . $theme_slug . '/styles/typography';
+            
+            // Si le dossier n'existe pas, créer un preset par défaut
+            if (!is_dir($typography_path)) {
+                $default_preset = array(
+                    array(
+                        'name' => 'Default Typography',
+                        'slug' => 'default-typography',
+                        'settings' => array(
+                            'typography' => array(
+                                'fontFamilies' => array(
+                                    array(
+                                        'name' => 'Arial',
+                                        'slug' => 'first',
+                                        'fontFamily' => 'Arial, sans-serif'
+                                    ),
+                                    array(
+                                        'name' => 'Sans Serif',
+                                        'slug' => 'second',
+                                        'fontFamily' => 'sans-serif'
+                                    )
+                                )
+                            )
+                        )
+                    )
+                );
+                wp_send_json_success($default_preset);
+                return;
+            }
+
+            // Lire les fichiers JSON du dossier
+            $presets = array();
+            $files = glob($typography_path . '/*.json');
+            
+            foreach ($files as $file) {
+                $content = file_get_contents($file);
+                if ($content) {
+                    $preset = json_decode($content, true);
+                    if ($preset && isset($preset['title']) && isset($preset['slug'])) {
+                        $presets[] = array(
+                            'name' => $preset['title'],
+                            'slug' => $preset['slug']
+                        );
+                    }
+                }
+            }
+
+            // Si aucun preset trouvé, renvoyer le preset par défaut
+            if (empty($presets)) {
+                $presets[] = array(
+                    'name' => 'Default Typography',
+                    'slug' => 'default-typography'
+                );
+            }
+
+            wp_send_json_success($presets);
+
+        } catch (Exception $e) {
+            error_log('Erreur dans get_theme_presets : ' . $e->getMessage());
+            wp_send_json_error('Erreur lors de la récupération des presets : ' . $e->getMessage());
+        }
+    }
+
+    /**
+     * Initialise les hooks nécessaires
+     */
+    public function init() {
+        add_action('wp_ajax_get_theme_presets', array($this, 'get_theme_presets'));
+        // ... autres hooks existants ...
+    }
 } 

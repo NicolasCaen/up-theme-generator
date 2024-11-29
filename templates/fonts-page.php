@@ -22,6 +22,11 @@ $nonce = wp_create_nonce('up_theme_generator_nonce');
                     <?php endif; ?>
                 <?php endforeach; ?>
             </select>
+
+            <!-- Ajout de la sélection de preset -->
+            <select id="preset-selector" disabled>
+                <option value="">Sélectionner un preset</option>
+            </select>
         </div>
     </div>
 
@@ -83,6 +88,9 @@ $nonce = wp_create_nonce('up_theme_generator_nonce');
 .toggle-files.active {
     font-weight: bold;
 }
+#preset-selector {
+    margin-left: 10px;
+}
 </style>
 
 <script>
@@ -91,6 +99,39 @@ jQuery(document).ready(function($) {
     $('#theme-selector').on('change', function() {
         var selectedTheme = $(this).val();
         $('.add-font').prop('disabled', !selectedTheme);
+        
+        // Charger les presets disponibles
+        if (selectedTheme) {
+            $.ajax({
+                url: ajaxurl,
+                type: 'POST',
+                data: {
+                    action: 'get_theme_presets',
+                    theme: selectedTheme,
+                    nonce: '<?php echo wp_create_nonce('up_theme_generator_nonce'); ?>'
+                },
+                success: function(response) {
+                    var $presetSelector = $('#preset-selector');
+                    $presetSelector.empty().append('<option value="">Sélectionner un preset</option>');
+                    
+                    if (response.success && response.data) {
+                        response.data.forEach(function(preset) {
+                            $presetSelector.append(
+                                $('<option>', {
+                                    value: preset.slug,
+                                    text: preset.name
+                                })
+                            );
+                        });
+                        $presetSelector.prop('disabled', false);
+                    } else {
+                        $presetSelector.prop('disabled', true);
+                    }
+                }
+            });
+        } else {
+            $('#preset-selector').prop('disabled', true).val('');
+        }
     });
 
     // Affichage/masquage des fichiers
@@ -108,6 +149,7 @@ jQuery(document).ready(function($) {
         var $button = $(this);
         var fontName = $button.data('font');
         var selectedTheme = $('#theme-selector').val();
+        var selectedPreset = $('#preset-selector').val();
 
         if (!selectedTheme) {
             alert('Veuillez sélectionner un thème');
@@ -117,12 +159,13 @@ jQuery(document).ready(function($) {
         $button.prop('disabled', true).text('Ajout en cours...');
 
         $.ajax({
-            url: '<?php echo admin_url('admin-ajax.php'); ?>',
+            url: ajaxurl,
             type: 'POST',
             data: {
                 action: 'add_font_to_theme',
-                nonce: '<?php echo $nonce; ?>',
+                nonce: '<?php echo wp_create_nonce('up_theme_generator_nonce'); ?>',
                 theme: selectedTheme,
+                preset: selectedPreset,
                 font: fontName
             },
             success: function(response) {

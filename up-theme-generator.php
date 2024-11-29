@@ -14,6 +14,8 @@ if (!defined('ABSPATH')) {
 define('UP_THEME_GENERATOR_PATH', plugin_dir_path(__FILE__));
 define('UP_THEME_GENERATOR_URL', plugin_dir_url(__FILE__));
 define('UP_THEME_GENERATOR_VERSION', '1.0.0');
+define('UP_THEME_GENERATOR_ASSETS', UP_THEME_GENERATOR_URL . 'assets/');
+define('UP_THEME_GENERATOR_RESOURCES', UP_THEME_GENERATOR_PATH . 'resources/');
 
 // Autoloader pour les classes avec correction des noms de fichiers
 spl_autoload_register(function ($class) {
@@ -80,6 +82,7 @@ function up_theme_generator_init() {
         $admin_menu = new UPThemeGenerator\AdminMenu();
         $assets = new UPThemeGenerator\Assets();
         $theme_generator = new UPThemeGenerator\ThemeGenerator();
+        $fonts_manager = new UPThemeGenerator\FontsManager();
         
         error_log('Toutes les classes ont été instanciées avec succès');
     } catch (\Exception $e) {

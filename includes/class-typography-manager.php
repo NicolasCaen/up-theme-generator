@@ -57,37 +57,122 @@ class TypographyManager {
         return $fonts;
     }
 
-    private function get_font_files($font_path) {
-        $files = array_diff(scandir($font_path), array('.', '..'));
-        $font_files = array();
+    private function get_font_weight_value($weight_name) {
+        // Table de correspondance des poids de police
+        $weight_map = array(
+            'thin' => '100',
+            'hairline' => '100',
+            'extralight' => '200',
+            'ultralight' => '200',
+            'light' => '300',
+            'regular' => '400',
+            'normal' => '400',
+            'medium' => '500',
+            'semibold' => '600',
+            'demibold' => '600',
+            'bold' => '700',
+            'extrabold' => '800',
+            'ultrabold' => '800',
+            'black' => '900',
+            'heavy' => '900',
+            'extrablack' => '950',
+            'ultrablack' => '950'
+        );
+
+        // Convertir en minuscules et supprimer les espaces
+        $weight_name = strtolower(str_replace(' ', '', $weight_name));
         
-        foreach ($files as $file) {
-            if (in_array(pathinfo($file, PATHINFO_EXTENSION), array('ttf', 'otf', 'woff', 'woff2'))) {
-                $font_files[] = array(
-                    'name' => $file,
-                    'weight' => $this->extract_font_weight($file),
-                    'style' => $this->extract_font_style($file)
+        return isset($weight_map[$weight_name]) ? $weight_map[$weight_name] : '400';
+    }
+
+    private function get_font_files($font_path) {
+        if (!is_dir($font_path)) {
+            error_log('Dossier de police introuvable : ' . $font_path);
+            return array();
+        }
+
+        $files = scandir($font_path);
+        if ($files === false) {
+            error_log('Impossible de lire le dossier : ' . $font_path);
+            return array();
+        }
+
+        // Filtrer les fichiers de police
+        $font_files = array_diff($files, array('.', '..'));
+        
+        // Trier les fichiers par poids et style
+        $sorted_files = array();
+        foreach ($font_files as $file) {
+            // Vérifier d'abord le format numérique
+            if (preg_match('/-(\d+)(-italic)?\.woff2$/', $file, $matches)) {
+                $weight = $matches[1];
+                $style = isset($matches[2]) ? 'italic' : 'normal';
+            } 
+            // Ensuite vérifier les noms de poids
+            elseif (preg_match('/-([\w]+)(-italic)?\.woff2$/i', $file, $matches)) {
+                $weight = $this->get_font_weight_value($matches[1]);
+                $style = isset($matches[2]) ? 'italic' : 'normal';
+            } 
+            // Pour les fichiers sans indication de poids
+            else {
+                $weight = '400';
+                $style = 'normal';
+            }
+
+            $sorted_files[] = array(
+                'file' => $file,
+                'weight' => $weight,
+                'style' => $style
+            );
+        }
+
+        return $sorted_files;
+    }
+
+    private function prepare_font_data($font_name, $slug) {
+        try {
+            // Construire le chemin vers les polices du thème actif
+            $theme_slug = $_POST['theme'];
+            $font_path = WP_CONTENT_DIR . '/themes/' . $theme_slug . '/assets/fonts/' . $font_name;
+            error_log('Recherche des polices dans : ' . $font_path);
+
+            $font_files = $this->get_font_files($font_path);
+            error_log('Fichiers de police trouvés : ' . print_r($font_files, true));
+
+            $font_faces = array();
+            foreach ($font_files as $font_file) {
+                $font_faces[] = array(
+                    'fontFamily' => $font_name,
+                    'fontStyle' => $font_file['style'],
+                    'fontWeight' => $font_file['weight'],
+                    'src' => array(
+                        'file:./assets/fonts/' . $font_name . '/' . $font_file['file']
+                    )
                 );
             }
-        }
-        
-        return $font_files;
-    }
 
-    private function extract_font_weight($filename) {
-        if (preg_match('/-(\d+)(?:-italic)?\./', $filename, $matches)) {
-            return $matches[1];
-        }
-        
-        if (stripos($filename, 'VariableFont') !== false) {
-            return '200 900';
-        }
-        
-        return '400';
-    }
+            // Si aucun fichier trouvé, utiliser une configuration par défaut
+            if (empty($font_faces)) {
+                $font_faces[] = array(
+                    'fontFamily' => $font_name,
+                    'fontStyle' => 'normal',
+                    'fontWeight' => '400',
+                    'src' => array(
+                        'file:./assets/fonts/' . $font_name . '/' . $font_name . '.woff2'
+                    )
+                );
+            }
 
-    private function extract_font_style($filename) {
-        return preg_match('/-italic\./', $filename) ? 'italic' : 'normal';
+            return array(
+                'fontFamily' => $font_name . ', sans-serif',
+                'name' => ucfirst($font_name),
+                'slug' => $slug,
+                'fontFace' => $font_faces
+            );
+        } catch (Exception $e) {
+            error_log('Erreur dans prepare_font_data : ' . $e->getMessage());
+            throw $e;
+        }
     }
 
     public function ajax_save_typography_preset() {
@@ -188,33 +273,6 @@ class TypographyManager {
             error_log('Trace : ' . $e->getTraceAsString());
             wp_send_json_error($e->getMessage());
         }
-    }
-
-    private function prepare_font_data($font_name, $slug) {
-        $current_theme = wp_get_theme();
-        $font_path = WP_CONTENT_DIR . '/themes/' . $current_theme->get_stylesheet() . '/assets/fonts/' . $font_name;
-        $font_files = $this->get_font_files($font_path);
-
-        $font_data = array(
-            'name' => $font_name,
-            'slug' => $slug,
-            'fontFamily' => $font_name . ', ' . ($slug === 'second' ? 'serif' : 'sans-serif'),
-            'fontFace' => array()
-        );
-
-        foreach ($font_files as $file) {
-            $font_face = array(
-                'fontFamily' => $font_name,
-                'fontStyle' => $file['style'],
-                'fontWeight' => $file['weight'],
-                'src' => array(
-                    'file:./assets/fonts/' . strtolower($font_name) . '/' . $file['name']
-                )
-            );
-            $font_data['fontFace'][] = $font_face;
-        }
-
-        return $font_data;
     }
 
     public function ajax_get_theme_fonts() {

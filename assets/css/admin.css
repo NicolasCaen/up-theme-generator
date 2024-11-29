@@ -4,7 +4,6 @@
     margin-bottom: 20px;
     border: 1px solid #ccc;
     border-radius: 4px;
-    position: relative;
 }
 
 .up-theme-form .form-section h2 {
@@ -14,86 +13,6 @@
 }
 
 .color-item,
-.font-size-item {
-    display: flex;
-    gap: 10px;
-    margin-bottom: 10px;
-    align-items: center;
-}
-
-.color-item input[type="text"],
-.font-size-item input[type="text"] {
-    width: 200px;
-}
-
-.remove-color,
-.remove-font {
-    color: #dc3232;
-    border: 1px solid #dc3232;
-    background: transparent;
-    cursor: pointer;
-    padding: 4px 8px;
-    border-radius: 3px;
-}
-
-.form-actions {
-    margin-top: 20px;
-}
-
-#theme-description {
-    width: 100%;
-    min-height: 100px;
-}
-
-.color-item input[name="color_slugs[]"] {
-    width: 150px;
-    margin-right: 10px;
-}
-
-#existing_theme_row select {
-    width: 300px;
-}
-
-.form-section.loading::after {
-    content: "";
-    position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    background: rgba(255, 255, 255, 0.7);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-}
-
-.action-text-update {
-    display: none;
-}
-
-.form-section.loading {
-    position: relative;
-    pointer-events: none;
-}
-
-.form-section.loading::after {
-    content: "";
-    position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    background: rgba(255, 255, 255, 0.7) url('../images/loading.gif') center no-repeat;
-    z-index: 1;
-}
-
-/* Styles pour désactiver les champs en mode mise à jour */
-.operation-update #theme_name,
-.operation-update #theme_slug {
-    background-color: #f0f0f0;
-    cursor: not-allowed;
-}
-
 .font-size-item {
     display: flex;
     flex-wrap: wrap;
@@ -129,24 +48,52 @@
     width: 150px;
 }
 
-.font-size-value label,
-.font-size-fluid label {
-    font-size: 12px;
-    color: #666;
+.color-item input[type="text"],
+.font-size-item input[type="text"] {
+    width: 200px;
 }
 
+.color-item input[name="color_slugs[]"] {
+    width: 150px;
+}
+
+.remove-color,
 .remove-font {
-    align-self: flex-start;
+    color: #dc3232;
+    border: 1px solid #dc3232;
+    background: transparent;
+    cursor: pointer;
+    padding: 4px 8px;
+    border-radius: 3px;
 }
 
-.description {
-    margin-top: 10px;
-    font-style: italic;
-    color: #666;
+.form-actions {
+    margin-top: 20px;
 }
 
-/* Styles pour les champs désactivés en mode mise à jour */
-.operation-update .font-size-item input:disabled {
+#theme-description {
+    width: 100%;
+    min-height: 100px;
+}
+
+.form-section.loading {
+    position: relative;
+    pointer-events: none;
+}
+
+.form-section.loading::after {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(255, 255, 255, 0.7);
+    z-index: 1;
+}
+
+.operation-update #theme_name,
+.operation-update #theme_slug {
     background-color: #f0f0f0;
     cursor: not-allowed;
 }

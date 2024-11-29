@@ -83,6 +83,7 @@ function up_theme_generator_init() {
         $assets = new UPThemeGenerator\Assets();
         $theme_generator = new UPThemeGenerator\ThemeGenerator();
         $fonts_manager = new UPThemeGenerator\FontsManager();
+        $typography_manager = new UPThemeGenerator\TypographyManager();
         
         error_log('Toutes les classes ont été instanciées avec succès');
     } catch (\Exception $e) {

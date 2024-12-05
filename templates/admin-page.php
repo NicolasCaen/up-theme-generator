@@ -129,6 +129,26 @@ if (!defined('ABSPATH')) {
                         <button type="button" id="add-font-size" class="button">Ajouter une taille</button>
                     </td>
                 </tr>
+                <tr>
+                    <th>Tailles d'espacement</th>
+                    <td>
+                        <div id="spacing-sizes">
+                            <div class="spacing-size-item">
+                                <div class="spacing-size-name">
+                                    <input type="text" name="spacing_names[]" placeholder="Nom (ex: small)">
+                                </div>
+                                <div class="spacing-size-values">
+                                    <div class="spacing-size-value">
+                                        <label>Taille</label>
+                                        <input type="text" name="spacing_sizes[]" placeholder="ex: 1rem">
+                                    </div>
+                                </div>
+                                <button type="button" class="remove-spacing">Supprimer</button>
+                            </div>
+                        </div>
+                        <button type="button" id="add-spacing-size" class="button">Ajouter une taille d'espacement</button>
+                    </td>
+                </tr>
             </table>
         </div>
 

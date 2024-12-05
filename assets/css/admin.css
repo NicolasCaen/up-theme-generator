@@ -110,3 +110,45 @@
     font-style: italic;
     margin: 5px 0;
 }
+
+.spacing-size-item {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    align-items: flex-start;
+    margin-bottom: 15px;
+    padding: 15px;
+    background: #f9f9f9;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+}
+
+.spacing-size-name {
+    flex: 0 0 200px;
+}
+
+.spacing-size-values {
+    flex: 1;
+    display: flex;
+    gap: 15px;
+    align-items: flex-start;
+}
+
+.spacing-size-value {
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+}
+
+.spacing-size-value input {
+    width: 150px;
+}
+
+.remove-spacing {
+    color: #dc3232;
+    border: 1px solid #dc3232;
+    background: transparent;
+    cursor: pointer;
+    padding: 4px 8px;
+    border-radius: 3px;
+}

@@ -284,6 +284,32 @@ jQuery(document).ready(function($) {
                 $(`input[name="parts[]"][value="${part}"]`).prop('checked', true);
             });
         }
+
+        // Tailles d'espacement
+        $('#spacing-sizes').empty();
+        if (themeData.spacing && themeData.spacing.spacingSizes && themeData.spacing.spacingSizes.length > 0) {
+            themeData.spacing.spacingSizes.forEach(spacing => {
+                console.log('Ajout de la taille d\'espacement:', spacing);
+                const template = `
+                    <div class="spacing-size-item">
+                        <div class="spacing-size-name">
+                            <input type="text" name="spacing_names[]" value="${spacing.name}" placeholder="Nom (ex: small)">
+                        </div>
+                        <div class="spacing-size-values">
+                            <div class="spacing-size-value">
+                                <label>Taille</label>
+                                <input type="text" name="spacing_sizes[]" value="${spacing.size}" placeholder="ex: 1rem">
+                            </div>
+                        </div>
+                        <button type="button" class="remove-spacing">Supprimer</button>
+                    </div>
+                `;
+                $('#spacing-sizes').append(template);
+            });
+        } else {
+            // Ajouter une ligne vide si aucune taille d'espacement n'existe
+            $('#add-spacing-size').trigger('click');
+        }
     }
 
     // Modifiez l'événement de changement du select de thème
@@ -333,5 +359,39 @@ jQuery(document).ready(function($) {
         } else {
             $preview.hide();
         }
+    });
+
+    // Ajout d'une taille d'espacement
+    $('#add-spacing-size').on('click', function() {
+        const template = `
+            <div class="spacing-size-item">
+                <div class="spacing-size-name">
+                    <input type="text" name="spacing_names[]" placeholder="Nom (ex: small)">
+                </div>
+                <div class="spacing-size-values">
+                    <div class="spacing-size-value">
+                        <label>Taille</label>
+                        <input type="text" name="spacing_sizes[]" placeholder="ex: 1rem">
+                    </div>
+                </div>
+                <button type="button" class="remove-spacing">Supprimer</button>
+            </div>
+        `;
+        $('#spacing-sizes').append(template);
+    });
+
+    // Suppression d'une taille d'espacement
+    $(document).on('click', '.remove-spacing', function() {
+        $(this).closest('.spacing-size-item').remove();
+    });
+
+    // Auto-génération du slug d'espacement
+    $(document).on('input', 'input[name="spacing_names[]"]', function() {
+        const $item = $(this).closest('.spacing-size-item');
+        const value = $(this).val()
+            .toLowerCase()
+            .replace(/[^a-z0-9]/g, '-')
+            .replace(/-+/g, '-')
+            .replace(/^-|-$/g, '');
     });
 });

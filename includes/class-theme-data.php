@@ -56,6 +56,9 @@ class ThemeData {
             'typography' => array(
                 'fontSizes' => array()
             ),
+            'spacing' => array(
+                'spacingSizes' => array()
+            ),
             'templates' => array(),
             'parts' => array()
         );
@@ -73,6 +76,11 @@ class ThemeData {
             // Récupérer les tailles de police
             if (isset($theme_json['settings']['typography']['fontSizes'])) {
                 $theme_data['typography']['fontSizes'] = $theme_json['settings']['typography']['fontSizes'];
+            }
+
+            // Récupérer les tailles d'espacement
+            if (isset($theme_json['settings']['spacing']['spacingSizes'])) {
+                $theme_data['spacing']['spacingSizes'] = $theme_json['settings']['spacing']['spacingSizes'];
             }
         }
 
@@ -137,6 +145,15 @@ class ThemeData {
             }
         }
 
+        // Validation des tailles d'espacement
+        if (!empty($data['spacing_names'])) {
+            foreach ($data['spacing_names'] as $index => $name) {
+                if (empty($name) && !empty($data['spacing_sizes'][$index])) {
+                    $errors[] = 'Le nom de la taille d\'espacement est requis';
+                }
+            }
+        }
+
         return empty($errors) ? true : $errors;
     }
 
@@ -169,6 +186,16 @@ class ThemeData {
                 }
                 if (!empty($theme_data['font_sizes_max'][$index])) {
                     $sanitized['font_sizes_max'][] = sanitize_text_field($theme_data['font_sizes_max'][$index]);
+                }
+            }
+        }
+
+        // Sanitize spacing sizes
+        if (!empty($theme_data['spacing_names'])) {
+            foreach ($theme_data['spacing_names'] as $index => $name) {
+                if (!empty($name) && !empty($theme_data['spacing_sizes'][$index])) {
+                    $sanitized['spacing_names'][] = sanitize_text_field($name);
+                    $sanitized['spacing_sizes'][] = sanitize_text_field($theme_data['spacing_sizes'][$index]);
                 }
             }
         }

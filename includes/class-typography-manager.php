@@ -22,7 +22,7 @@ class TypographyManager {
 
     public function render_typography_page() {
         $themes = wp_get_themes(array('errors' => null));
-        $selected_theme = isset($_GET['theme']) ? sanitize_text_field($_GET['theme']) : wp_get_theme()->get_stylesheet();
+        $selected_theme = isset($_GET['theme']) ? sanitize_text_field($_GET['theme']) : '';
         
         $fonts = $this->get_available_fonts($selected_theme);
         
@@ -32,7 +32,97 @@ class TypographyManager {
             'nonce' => wp_create_nonce('up_theme_generator_nonce')
         ));
         
+        // Gérer l'application du preset
+        if (isset($_POST['apply_preset']) && check_admin_referer('apply_typography_preset', 'typography_preset_nonce')) {
+            $this->handle_typography_preset($_POST['preset_file'], $selected_theme);
+        }
+        
+        echo '<div class="wrap">';
+        echo '<h1>Gestionnaire de Typographie</h1>';
+        
+        // Afficher le sélecteur de thème
+        echo '<form method="get" action="">';
+        echo '<input type="hidden" name="page" value="up-theme-generator-typography">';
+        echo '<select name="theme" onchange="this.form.submit()">';
+        echo '<option value="">Sélectionner un thème</option>';
+        foreach ($themes as $theme) {
+            $selected = ($theme->get_stylesheet() === $selected_theme) ? 'selected' : '';
+            echo '<option value="' . esc_attr($theme->get_stylesheet()) . '" ' . $selected . '>';
+            echo esc_html($theme->get('Name'));
+            echo '</option>';
+        }
+        echo '</select>';
+        echo '</form>';
+        
+        settings_errors('typography_presets');
+        
+        // Afficher les presets disponibles seulement si un thème est sélectionné
+        if (!empty($selected_theme)) {
+            $preset_dir = WP_CONTENT_DIR . '/themes/' . $selected_theme . '/styles/typography/';
+            $preset_files = glob($preset_dir . '*.json');
+            
+            echo '<h2>Presets de Typographie</h2>';
+            echo '<table class="wp-list-table widefat fixed striped">';
+            echo '<thead>';
+            echo '<tr>';
+            echo '<th>Nom du Preset</th>';
+            echo '<th>First Font</th>';
+            echo '<th>Second Font</th>';
+            echo '<th>Third Font</th>';
+            echo '<th>Action</th>';
+            echo '</tr>';
+            echo '</thead>';
+            echo '<tbody>';
+            
+            if (empty($preset_files)) {
+                echo '<tr><td colspan="5">Aucun preset de typographie trouvé pour ce thème.</td></tr>';
+            } else {
+                foreach ($preset_files as $file) {
+                    $preset_data = json_decode(file_get_contents($file), true);
+                    $preset_name = basename($file, '.json');
+                    
+                    echo '<tr>';
+                    echo '<td>' . esc_html($preset_data['title'] ?? $preset_name) . '</td>';
+                    
+                    // Afficher les détails des polices
+                    foreach (['first', 'second', 'third'] as $font_key) {
+                        echo '<td>';
+                        if (isset($preset_data['settings']['typography']['fontFamilies'])) {
+                            foreach ($preset_data['settings']['typography']['fontFamilies'] as $font) {
+                                if ($font['slug'] === $font_key) {
+                                    echo '<strong>Famille:</strong> ' . esc_html($font['fontFamily']) . '<br>';
+                                    echo '<strong>Nom:</strong> ' . esc_html($font['name']) . '<br>';
+                                    if (!empty($font['fontFace'])) {
+                                        echo '<strong>Variantes:</strong> ' . count($font['fontFace']);
+                                    }
+                                }
+                            }
+                        }
+                        echo '</td>';
+                    }
+                    
+                    // Bouton d'action
+                    echo '<td>';
+                    echo '<form method="post">';
+                    echo '<input type="hidden" name="preset_file" value="' . esc_attr($preset_name) . '">';
+                    wp_nonce_field('apply_typography_preset', 'typography_preset_nonce');
+                    echo '<input type="submit" name="apply_preset" class="button button-primary" value="Appliquer">';
+                    echo '</form>';
+                    echo '</td>';
+                    
+                    echo '</tr>';
+                }
+            }
+            
+            echo '</tbody>';
+            echo '</table>';
+        } else {
+            echo '<div class="notice notice-warning"><p>Veuillez sélectionner un thème pour voir les presets de typographie disponibles.</p></div>';
+        }
+        
+        // Afficher le reste de la page
         include UP_THEME_GENERATOR_PATH . 'templates/typography-page.php';
+        echo '</div>';
     }
 
     private function get_available_fonts($theme_slug) {
@@ -311,5 +401,43 @@ class TypographyManager {
                 'nonce' => wp_create_nonce('up_theme_generator_nonce')
             )
         );
+    }
+
+    private function handle_typography_preset($preset_name, $theme_slug) {
+        try {
+            $preset_file = WP_CONTENT_DIR . '/themes/' . $theme_slug . '/styles/typography/' . $preset_name . '.json';
+            
+            if (!file_exists($preset_file)) {
+                throw new Exception('Preset non trouvé');
+            }
+
+            // Lire le preset
+            $preset_data = json_decode(file_get_contents($preset_file), true);
+            
+            // Lire le theme.json actuel
+            $theme_json_path = WP_CONTENT_DIR . '/themes/' . $theme_slug . '/theme.json';
+            $theme_json = json_decode(file_get_contents($theme_json_path), true);
+            
+            // Mettre à jour uniquement les fontFamilies
+            if (!isset($theme_json['settings'])) {
+                $theme_json['settings'] = array();
+            }
+            if (!isset($theme_json['settings']['typography'])) {
+                $theme_json['settings']['typography'] = array();
+            }
+            
+            $theme_json['settings']['typography']['fontFamilies'] = 
+                $preset_data['settings']['typography']['fontFamilies'];
+            
+            // Sauvegarder le theme.json
+            if (file_put_contents($theme_json_path, json_encode($theme_json, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES))) {
+                add_settings_error('typography_presets', 'preset_applied', 'Preset appliqué avec succès', 'success');
+            } else {
+                throw new Exception('Impossible de sauvegarder le theme.json');
+            }
+        } catch (Exception $e) {
+            add_settings_error('typography_presets', 'preset_error', 
+                'Erreur lors de l\'application du preset: ' . $e->getMessage(), 'error');
+        }
     }
 } 

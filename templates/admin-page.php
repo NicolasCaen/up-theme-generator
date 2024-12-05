@@ -105,7 +105,10 @@ if (!defined('ABSPATH')) {
                     </td>
                 </tr>
                 <tr>
-                    <th>Tailles de police</th>
+                    <th>
+                        Tailles de police
+                        <button type="button" id="load-default-font-sizes" class="button button-secondary">Charger les valeurs par défaut</button>
+                    </th>
                     <td>
                         <div id="font-sizes">
                             <div class="font-size-item">
@@ -133,7 +136,10 @@ if (!defined('ABSPATH')) {
                     </td>
                 </tr>
                 <tr>
-                    <th>Tailles d'espacement</th>
+                    <th>
+                        Tailles d'espacement
+                        <button type="button" id="load-default-spacing-sizes" class="button button-secondary">Charger les valeurs par défaut</button>
+                    </th>
                     <td>
                         <div id="spacing-sizes">
                             <div class="spacing-size-item">

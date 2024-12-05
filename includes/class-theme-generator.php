@@ -177,11 +177,28 @@ class ThemeGenerator {
             'settings' => array(
                 'appearanceTools' => true,
                 'color' => array(
-                    'palette' => array()
+                    'palette' => array(),
+                    'defaultDuotone' => false,
+                    'defaultGradients' => false,
+                    'defaultPalette' => false
                 ),
                 'typography' => array(
+                    'writingMode' => true,
+                    'defaultFontSizes' => false,
                     'fluid' => true,
                     'fontSizes' => array()
+                ),
+                'spacing' => array(
+                    'spacingSizes' => array(),
+                    'defaultSpacingSizes' => false,
+                    'units' => [
+                        '%',
+                        'px',
+                        'em',
+                        'rem',
+                        'vh',
+                        'vw'
+                    ]
                 )
             ),
             'styles' => array(
@@ -230,6 +247,17 @@ class ThemeGenerator {
                 $theme_json['settings']['typography']['fontSizes'][] = $font_size;
             }
         }
+
+        // Ajouter les tailles d'espacement
+        if (!empty($theme_data['spacing_names'])) {
+            foreach ($theme_data['spacing_names'] as $index => $name) {
+                $theme_json['settings']['spacing']['spacingSizes'][] = array(
+                    'slug' => sanitize_title($name),
+                    'name' => $name,
+                    'size' => $theme_data['spacing_sizes'][$index]
+                );
+            }
+        } 
 
         if (!file_put_contents($theme_dir . '/theme.json', json_encode($theme_json, JSON_PRETTY_PRINT))) {
             throw new \Exception('Impossible de créer le fichier theme.json');

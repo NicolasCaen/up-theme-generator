@@ -5,6 +5,18 @@ const DEFAULT_COLORS = [
     { name: 'Text', slug: 'text', value: '#333333' }
 ];
 
+const DEFAULT_FONT_SIZES = [
+    { name: 'Small', size: 'clamp(0.875rem, 1vw, 1rem)', min: '0.875rem', max: '1rem' },
+    { name: 'Medium', size: 'clamp(1rem, 2vw, 1.25rem)', min: '1rem', max: '1.25rem' },
+    { name: 'Large', size: 'clamp(1.25rem, 3vw, 1.5rem)', min: '1.25rem', max: '1.5rem' }
+];
+
+const DEFAULT_SPACING_SIZES = [
+    { name: 'Small', size: '0.5rem' },
+    { name: 'Medium', size: '1rem' },
+    { name: 'Large', size: '2rem' }
+];
+
 jQuery(document).ready(function($) {
     // Fonction pour ajouter un élément de couleur
     function addColorItem(name = '', slug = '', value = '') {
@@ -19,6 +31,52 @@ jQuery(document).ready(function($) {
         $('#color-palette').append(template);
     }
 
+    // Fonction pour ajouter un élément de taille de police
+    function addFontSizeItem(name = '', size = '', min = '', max = '') {
+        const template = `
+            <div class="font-size-item">
+                <div class="font-size-name">
+                    <input type="text" name="font_names[]" value="${name}" placeholder="Nom (ex: small)">
+                </div>
+                <div class="font-size-values">
+                    <div class="font-size-value">
+                        <label>Défaut</label>
+                        <input type="text" name="font_sizes[]" value="${size}" placeholder="ex: clamp(1rem, 2vw, 1.5rem)">
+                    </div>
+                    <div class="font-size-fluid">
+                        <label>Min</label>
+                        <input type="text" name="font_sizes_min[]" value="${min}" placeholder="ex: 1rem">
+                    </div>
+                    <div class="font-size-fluid">
+                        <label>Max</label>
+                        <input type="text" name="font_sizes_max[]" value="${max}" placeholder="ex: 1.5rem">
+                    </div>
+                </div>
+                <button type="button" class="remove-font">Supprimer</button>
+            </div>
+        `;
+        $('#font-sizes').append(template);
+    }
+
+    // Fonction pour ajouter un élément de taille d'espacement
+    function addSpacingSizeItem(name = '', size = '') {
+        const template = `
+            <div class="spacing-size-item">
+                <div class="spacing-size-name">
+                    <input type="text" name="spacing_names[]" value="${name}" placeholder="Nom (ex: small)">
+                </div>
+                <div class="spacing-size-values">
+                    <div class="spacing-size-value">
+                        <label>Taille</label>
+                        <input type="text" name="spacing_sizes[]" value="${size}" placeholder="ex: 1rem">
+                    </div>
+                </div>
+                <button type="button" class="remove-spacing">Supprimer</button>
+            </div>
+        `;
+        $('#spacing-sizes').append(template);
+    }
+
     // Gestionnaire pour le bouton "Charger les valeurs par défaut"
     $('#load-default-colors').on('click', function() {
         // Vider la palette actuelle
@@ -27,6 +85,22 @@ jQuery(document).ready(function($) {
         // Ajouter les couleurs par défaut
         DEFAULT_COLORS.forEach(color => {
             addColorItem(color.name, color.slug, color.value);
+        });
+    });
+
+    // Gestionnaire pour le bouton "Charger les valeurs par défaut" des tailles de police
+    $('#load-default-font-sizes').on('click', function() {
+        $('#font-sizes').empty();
+        DEFAULT_FONT_SIZES.forEach(fontSize => {
+            addFontSizeItem(fontSize.name, fontSize.size, fontSize.min, fontSize.max);
+        });
+    });
+
+    // Gestionnaire pour le bouton "Charger les valeurs par défaut" des espacements
+    $('#load-default-spacing-sizes').on('click', function() {
+        $('#spacing-sizes').empty();
+        DEFAULT_SPACING_SIZES.forEach(spacingSize => {
+            addSpacingSizeItem(spacingSize.name, spacingSize.size);
         });
     });
 

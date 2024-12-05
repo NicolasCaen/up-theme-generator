@@ -1,6 +1,6 @@
 <?php
 namespace UPThemeGenerator;
-
+use Exception;
 class TypographyManager {
     public function __construct() {
         add_action('admin_menu', array($this, 'add_typography_menu'));

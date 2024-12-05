@@ -7,7 +7,7 @@ if (!defined('ABSPATH')) {
 <div class="wrap">
     <h1>Générateur de Thème FSE</h1>
     
-    <form id="theme-generator-form" class="up-theme-form">
+    <form id="theme-generator-form" class="up-theme-form" enctype="multipart/form-data">
         <div class="form-section">
             <h2>Mode de génération</h2>
             <table class="form-table">
@@ -65,6 +65,20 @@ if (!defined('ABSPATH')) {
                     <th>Auteur</th>
                     <td>
                         <input type="text" id="theme_author" name="theme_author">
+                    </td>
+                </tr>
+                <tr>
+                    <th>Capture d'écran du thème</th>
+                    <td>
+                        <input type="file" id="theme_screenshot" name="theme_screenshot" accept="image/png,image/jpeg">
+                        <p class="description">
+                            Format recommandé : PNG ou JPEG<br>
+                            Dimensions recommandées : 1200 × 900 pixels<br>
+                            Taille maximale : 2 Mo
+                        </p>
+                        <div id="screenshot-preview" style="display: none; margin-top: 10px;">
+                            <img src="" alt="Aperçu" style="max-width: 300px;">
+                        </div>
                     </td>
                 </tr>
             </table>
@@ -151,7 +165,7 @@ if (!defined('ABSPATH')) {
                 </tr>
             </table>
         </div>
-
+<?php /*
         <div class="form-section">
             <h2>Typographie</h2>
             <table class="form-table">
@@ -167,6 +181,14 @@ if (!defined('ABSPATH')) {
                 </tr>
             </table>
         </div>
+*/ ?>
+        <div class="form-field">
+            <label>
+                <input type="checkbox" id="create_backup" name="create_backup" checked>
+                Créer une sauvegarde avant la mise à jour
+            </label>
+            <p class="description">Crée une copie de sauvegarde du thème avant de le mettre à jour</p>
+        </div>
 
         <div class="form-actions">
             <button type="submit" class="button button-primary">
@@ -176,131 +198,3 @@ if (!defined('ABSPATH')) {
         </div>
     </form>
 </div>
-
-<script>
-jQuery(document).ready(function($) {
-    // Code existant...
-
-    function loadTypographyPresets(selectedTheme) {
-        console.log('Chargement des presets pour le thème:', selectedTheme); // Debug
-        
-        var $presetSelect = $('#typography_preset');
-        
-        if (selectedTheme) {
-            $.ajax({
-                url: ajaxurl,
-                type: 'POST',
-                data: {
-                    action: 'get_theme_presets',
-                    theme: selectedTheme,
-                    nonce: '<?php echo wp_create_nonce('up_theme_generator_nonce'); ?>'
-                },
-                success: function(response) {
-                    console.log('Réponse presets:', response); // Debug
-                    $presetSelect.find('option:not(:first)').remove();
-                    
-                    if (response.success && response.data) {
-                        response.data.forEach(function(preset) {
-                            $presetSelect.append(
-                                $('<option>', {
-                                    value: preset.slug,
-                                    text: preset.name
-                                })
-                            );
-                        });
-                    }
-                },
-                error: function(xhr, status, error) {
-                    console.error('Erreur AJAX:', error);
-                    console.error('Status:', status);
-                    console.error('Réponse:', xhr.responseText); // Debug complet
-                }
-            });
-        } else {
-            $presetSelect.find('option:not(:first)').remove();
-        }
-    }
-
-    // Écouter les changements du type d'opération
-    $('#operation_type').on('change', function() {
-        var operationType = $(this).val();
-        var $existingThemeRow = $('#existing_theme_row');
-        
-        if (operationType === 'update') {
-            $existingThemeRow.show();
-            // Charger les presets pour le thème sélectionné
-            var selectedTheme = $('#existing_theme').val();
-            if (selectedTheme) {
-                loadTypographyPresets(selectedTheme);
-            }
-        } else {
-            $existingThemeRow.hide();
-            // Réinitialiser les presets
-            $('#typography_preset').find('option:not(:first)').remove();
-        }
-    });
-
-    // Écouter les changements du thème sélectionné
-    $('#existing_theme').on('change', function() {
-        var selectedTheme = $(this).val();
-        loadTypographyPresets(selectedTheme);
-    });
-
-    // Dans le gestionnaire de soumission du formulaire
-    $('#theme-generator-form').on('submit', function(e) {
-        e.preventDefault();
-        
-        var operationType = $('#operation_type').val();
-        var selectedTheme = $('#existing_theme').val();
-        var typographyPreset = $('#typography_preset').val();
-        
-        // Vérification des données requises
-        if (operationType === 'update' && !selectedTheme) {
-            alert('Veuillez sélectionner un thème à mettre à jour');
-            return;
-        }
-
-        // Création de l'objet de données
-        var formData = new FormData();
-        formData.append('action', 'update_theme');
-        formData.append('nonce', '<?php echo wp_create_nonce('up_theme_generator_nonce'); ?>');
-        
-        // Ajout des données du thème dans un objet structuré
-        var themeData = {
-            'existing_theme': selectedTheme,
-            'typography_preset': typographyPreset,
-            'operation_type': operationType
-        };
-        
-        // Conversion en JSON et ajout à formData
-        formData.append('theme_data', JSON.stringify(themeData));
-
-        console.log('Données envoyées:', {
-            action: 'update_theme',
-            theme_data: themeData
-        });
-
-        $.ajax({
-            url: ajaxurl,
-            type: 'POST',
-            data: formData,
-            processData: false,
-            contentType: false,
-            success: function(response) {
-                console.log('Réponse reçue:', response);
-                if (response.success) {
-                    alert('Thème mis à jour avec succès !');
-                } else {
-                    alert('Erreur : ' + (response.data || 'Erreur inconnue'));
-                }
-            },
-            error: function(xhr, status, error) {
-                console.error('Erreur AJAX:', error);
-                console.error('Status:', status);
-                console.error('Réponse:', xhr.responseText);
-                alert('Erreur lors de la mise à jour du thème');
-            }
-        });
-    });
-});
-</script>

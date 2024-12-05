@@ -9,9 +9,9 @@ class ThemeData {
     public function get_available_themes() {
         $all_themes = wp_get_themes(array('errors' => null));
         $themes = array();
-        
-        foreach ($all_themes as $theme_slug => $theme) {
-            if (strpos($theme_slug, 'backups') === false) {
+   
+       foreach ($all_themes as $theme_slug => $theme) {
+            if (strpos($theme_slug, 'backup') === false) {
                 $themes[$theme_slug] = $theme;
             }
         }
@@ -191,7 +191,7 @@ class ThemeData {
         }
 
         $theme_dir = $theme->get_stylesheet_directory();
-        $backup_base_dir = WP_CONTENT_DIR . '/themes/backups';
+        $backup_base_dir = WP_CONTENT_DIR . '/backup/theme';
         
         if (!is_dir($backup_base_dir)) {
             if (!mkdir($backup_base_dir, 0755, true)) {

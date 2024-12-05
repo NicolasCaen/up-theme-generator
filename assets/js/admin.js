@@ -12,12 +12,60 @@ jQuery(document).ready(function($) {
         if (isUpdate) {
             // Charger les données du thème existant
             const selectedTheme = $('#existing_theme').val();
-            loadExistingThemeData(selectedTheme);
+            if (selectedTheme) {
+                loadExistingThemeData(selectedTheme);
+            }
         }
+    });
+
+    // Gestion de la soumission du formulaire
+    $('#theme-generator-form').on('submit', function(e) {
+        e.preventDefault();
+        
+        const formData = new FormData(this);
+        formData.append('action', 'generate_theme');
+        formData.append('nonce', upThemeGenerator.nonce);
+        formData.append('create_backup', $('#create_backup').is(':checked'));
+
+        const operationType = $('#operation_type').val();
+        formData.append('operation_type', operationType);
+        
+        if (operationType === 'update') {
+            formData.append('existing_theme', $('#existing_theme').val());
+        }
+
+        $.ajax({
+            url: upThemeGenerator.ajaxurl,
+            type: 'POST',
+            data: formData,
+            processData: false,
+            contentType: false,
+            dataType: 'json',
+            success: function(response) {
+                if (response && response.success) {
+                    alert(response.data.message || 'Thème mis à jour avec succès');
+                    window.location.href = 'themes.php';
+                } else {
+                    const errorMessage = response && response.data 
+                        ? response.data 
+                        : 'Une erreur est survenue lors de la mise à jour du thème.';
+                    alert(errorMessage);
+                }
+            },
+            error: function(xhr, status, error) {
+                console.error('Erreur AJAX:', error);
+                alert('Erreur lors de la communication avec le serveur.');
+            }
+        });
     });
 
     // Fonction pour charger les données d'un thème existant
     function loadExistingThemeData(themeSlug) {
+        if (!themeSlug) {
+            console.error('Slug du thème non fourni');
+            return;
+        }
+
         $('.form-section').addClass('loading');
         
         $.ajax({
@@ -28,15 +76,25 @@ jQuery(document).ready(function($) {
                 nonce: upThemeGenerator.nonce,
                 theme_slug: themeSlug
             },
+            dataType: 'json',
             success: function(response) {
-                if (response.success) {
+                if (response && response.success) {
                     populateFormWithThemeData(response.data);
                 } else {
-                    alert('Erreur lors du chargement des données du thème : ' + response.data);
+                    const errorMessage = response && response.data 
+                        ? response.data 
+                        : 'Erreur lors du chargement des données du thème';
+                    alert(errorMessage);
                 }
             },
-            error: function() {
-                alert('Erreur de communication avec le serveur');
+            error: function(xhr, status, error) {
+                console.group('Erreur chargement données thème');
+                console.error('Status:', status);
+                console.error('Erreur:', error);
+                console.error('Response:', xhr.responseText);
+                console.groupEnd();
+                
+                alert('Erreur lors du chargement des données du thème. Veuillez réessayer.');
             },
             complete: function() {
                 $('.form-section').removeClass('loading');
@@ -100,53 +158,6 @@ jQuery(document).ready(function($) {
     // Suppression d'éléments
     $(document).on('click', '.remove-color, .remove-font', function() {
         $(this).parent().remove();
-    });
-
-    // Soumission du formulaire
-    $('#theme-generator-form').on('submit', function(e) {
-        e.preventDefault();
-        
-        const formData = new FormData(this);
-        formData.append('action', 'generate_theme');
-        formData.append('nonce', upThemeGenerator.nonce);
-
-        $.ajax({
-            url: upThemeGenerator.ajaxurl,
-            type: 'POST',
-            data: formData,
-            processData: false,
-            contentType: false,
-            beforeSend: function() {
-                // Ajout d'un indicateur de chargement
-                $('<div class="notice notice-info"><p>Génération du thème en cours...</p></div>')
-                    .insertBefore('#theme-generator-form');
-            },
-            success: function(response) {
-                if (response.success) {
-                    // Remplace la notice de chargement par un message de succès
-                    $('.notice-info').replaceWith(
-                        `<div class="notice notice-success">
-                            <p>Thème généré avec succès ! Vous pouvez maintenant l'activer dans la section Apparence > Thèmes.</p>
-                        </div>`
-                    );
-                } else {
-                    // Remplace la notice de chargement par un message d'erreur
-                    $('.notice-info').replaceWith(
-                        `<div class="notice notice-error">
-                            <p>Erreur lors de la génération du thème : ${response.data || 'Erreur inconnue'}</p>
-                        </div>`
-                    );
-                }
-            },
-            error: function(xhr, status, error) {
-                // Gestion des erreurs
-                $('.notice-info').replaceWith(
-                    `<div class="notice notice-error">
-                        <p>Erreur lors de la communication avec le serveur : ${error}</p>
-                    </div>`
-                );
-            }
-        });
     });
 
     // Auto-génération du slug
@@ -279,6 +290,48 @@ jQuery(document).ready(function($) {
     $('#existing_theme').on('change', function() {
         if ($('#operation_type').val() === 'update') {
             loadExistingThemeData($(this).val());
+        }
+    });
+
+    // Prévisualisation du screenshot
+    $('#theme_screenshot').on('change', function() {
+        const file = this.files[0];
+        const $preview = $('#screenshot-preview');
+        const $img = $preview.find('img');
+        
+        if (file) {
+            // Vérifier le type de fichier
+            if (!file.type.match('image/png') && !file.type.match('image/jpeg')) {
+                alert('Le fichier doit être au format PNG ou JPEG');
+                this.value = '';
+                return;
+            }
+            
+            // Vérifier la taille (2Mo max)
+            if (file.size > 2 * 1024 * 1024) {
+                alert('Le fichier est trop volumineux (maximum 2 Mo)');
+                this.value = '';
+                return;
+            }
+
+            // Afficher la prévisualisation
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                $img.attr('src', e.target.result);
+                $preview.show();
+                
+                // Vérifier les dimensions
+                const image = new Image();
+                image.src = e.target.result;
+                image.onload = function() {
+                    if (this.width !== 1200 || this.height !== 900) {
+                        alert('Attention : Les dimensions recommandées sont 1200 × 900 pixels. Votre image fait ' + this.width + ' × ' + this.height + ' pixels.');
+                    }
+                };
+            };
+            reader.readAsDataURL(file);
+        } else {
+            $preview.hide();
         }
     });
 });

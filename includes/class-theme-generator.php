@@ -176,6 +176,10 @@ class ThemeGenerator {
             'version' => 3,
             'settings' => array(
                 'appearanceTools' => true,
+                'layout' => array(
+                    'contentSize' => $theme_data['content_size'] ?: '900px',
+                    'wideSize' => $theme_data['wide_size'] ?: '1340px'
+                ),
                 'color' => array(
                     'palette' => array(),
                     'defaultDuotone' => false,

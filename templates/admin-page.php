@@ -83,6 +83,26 @@ if (!defined('ABSPATH')) {
                 </tr>
             </table>
         </div>
+        <div class="form-section">
+            <h2>Layout</h2>
+            <table class="form-table">
+                <tr>
+                    <th>Taille du contenu</th>
+                    <td>
+                        <input type="text" name="content_size" id="content_size" placeholder="ex: 900px" value="900px">
+                        <p class="description">Largeur par défaut du contenu (ex: 900px)</p>
+                    </td>
+                </tr>
+                <tr>
+                    <th>Taille large</th>
+                    <td>
+                        <input type="text" name="wide_size" id="wide_size" placeholder="ex: 1340px" value="1340px">
+                        <p class="description">Largeur maximale pour le contenu large (ex: 1340px)</p>
+                    </td>
+                </tr>
+            </table>
+        </div>
+
 
         <div class="form-section">
             <h2>Configuration theme.json</h2>

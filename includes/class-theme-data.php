@@ -154,6 +154,14 @@ class ThemeData {
             }
         }
 
+        // Validation des tailles de layout
+        if (!empty($data['content_size']) && !preg_match('/^\d+(%|px|rem|em|vw)$/', $data['content_size'])) {
+            $errors[] = 'Le format de la taille du contenu est invalide';
+        }
+        if (!empty($data['wide_size']) && !preg_match('/^\d+(%|px|rem|em|vw)$/', $data['wide_size'])) {
+            $errors[] = 'Le format de la taille large est invalide';
+        }
+
         return empty($errors) ? true : $errors;
     }
 
@@ -207,6 +215,10 @@ class ThemeData {
         if (!empty($theme_data['parts'])) {
             $sanitized['parts'] = array_map('sanitize_text_field', $theme_data['parts']);
         }
+
+        // Sanitize content size
+        $sanitized['content_size'] = isset($theme_data['content_size']) ? sanitize_text_field($theme_data['content_size']) : '900px';
+        $sanitized['wide_size'] = isset($theme_data['wide_size']) ? sanitize_text_field($theme_data['wide_size']) : '1340px';
 
         return $sanitized;
     }

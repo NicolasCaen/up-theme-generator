@@ -88,7 +88,10 @@ if (!defined('ABSPATH')) {
             <h2>Configuration theme.json</h2>
             <table class="form-table">
                 <tr>
-                    <th>Palette de couleurs</th>
+                    <th>
+                        Palette de couleurs
+                        <button type="button" id="load-default-colors" class="button button-secondary">Charger les valeurs par défaut</button>
+                    </th>
                     <td>
                         <div id="color-palette">
                             <div class="color-item">

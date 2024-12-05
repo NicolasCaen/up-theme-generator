@@ -183,19 +183,19 @@ class ThemeGenerator {
                     'fluid' => true,
                     'fontSizes' => array()
                 )
+            ),
+            'styles' => array(
+                'typography' => array(
+                    'fontFamily' => 'var(--wp--preset--font-family--first)'
                 ),
-                'styles' => array(
-                    'typography' => array(
-                        'fontFamily' => 'var(--wp--preset--font-family--first)'
-                    ),
-                    'elements' => array(
-                        'heading' => array(
-                            'typography' => array(
-                                'fontFamily' => 'var(--wp--preset--font-family--second)'
-                            )
+                'elements' => array(
+                    'heading' => array(
+                        'typography' => array(
+                            'fontFamily' => 'var(--wp--preset--font-family--second)'
                         )
                     )
                 )
+            )
         );
 
         // Ajouter les couleurs
@@ -208,6 +208,7 @@ class ThemeGenerator {
                 );
             }
         }
+
 
         // Ajouter les tailles de police
         if (!empty($theme_data['font_names'])) {

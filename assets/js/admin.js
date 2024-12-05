@@ -1,4 +1,40 @@
+const DEFAULT_COLORS = [
+    { name: 'Primary', slug: 'primary', value: '#0073aa' },
+    { name: 'Secondary', slug: 'secondary', value: '#005177' },
+    { name: 'Background', slug: 'background', value: '#ffffff' },
+    { name: 'Text', slug: 'text', value: '#333333' }
+];
+
 jQuery(document).ready(function($) {
+    // Fonction pour ajouter un élément de couleur
+    function addColorItem(name = '', slug = '', value = '') {
+        const template = `
+            <div class="color-item">
+                <input type="text" name="color_names[]" value="${name}" placeholder="Nom de la couleur">
+                <input type="text" name="color_slugs[]" value="${slug}" placeholder="Slug de la couleur">
+                <input type="color" name="color_values[]" value="${value}">
+                <button type="button" class="remove-color">Supprimer</button>
+            </div>
+        `;
+        $('#color-palette').append(template);
+    }
+
+    // Gestionnaire pour le bouton "Charger les valeurs par défaut"
+    $('#load-default-colors').on('click', function() {
+        // Vider la palette actuelle
+        $('#color-palette').empty();
+        
+        // Ajouter les couleurs par défaut
+        DEFAULT_COLORS.forEach(color => {
+            addColorItem(color.name, color.slug, color.value);
+        });
+    });
+
+    // Gestionnaire pour le bouton "Ajouter une couleur"
+    $('#add-color').on('click', function() {
+        addColorItem();
+    });
+
     // Gestion du changement de type d'opération
     $('#operation_type').on('change', function() {
         const isUpdate = $(this).val() === 'update';
@@ -101,19 +137,6 @@ jQuery(document).ready(function($) {
             }
         });
     }
-
-    // Ajout de couleur modifié
-    $('#add-color').on('click', function() {
-        const template = `
-            <div class="color-item">
-                <input type="text" name="color_names[]" placeholder="Nom de la couleur">
-                <input type="text" name="color_slugs[]" placeholder="Slug de la couleur">
-                <input type="color" name="color_values[]">
-                <button type="button" class="remove-color">Supprimer</button>
-            </div>
-        `;
-        $('#color-palette').append(template);
-    });
 
     // Auto-génération du slug de couleur
     $(document).on('input', 'input[name="color_names[]"]', function() {

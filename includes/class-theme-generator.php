@@ -175,6 +175,7 @@ class ThemeGenerator {
             '$schema' => 'https://schemas.wp.org/trunk/theme.json',
             'version' => 3,
             'settings' => array(
+                'appearanceTools' => true,
                 'color' => array(
                     'palette' => array()
                 ),
@@ -182,7 +183,19 @@ class ThemeGenerator {
                     'fluid' => true,
                     'fontSizes' => array()
                 )
-            )
+                ),
+                'styles' => array(
+                    'typography' => array(
+                        'fontFamily' => 'var(--wp--preset--font-family--first)'
+                    ),
+                    'elements' => array(
+                        'heading' => array(
+                            'typography' => array(
+                                'fontFamily' => 'var(--wp--preset--font-family--second)'
+                            )
+                        )
+                    )
+                )
         );
 
         // Ajouter les couleurs

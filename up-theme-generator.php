@@ -16,6 +16,7 @@ define('UP_THEME_GENERATOR_URL', plugin_dir_url(__FILE__));
 define('UP_THEME_GENERATOR_VERSION', '1.0.0');
 define('UP_THEME_GENERATOR_ASSETS', UP_THEME_GENERATOR_URL . 'assets/');
 define('UP_THEME_GENERATOR_RESOURCES', UP_THEME_GENERATOR_PATH . 'resources/');
+define('UP_THEME_GENERATOR_DEBUG', false);
 
 // Autoloader pour les classes avec correction des noms de fichiers
 spl_autoload_register(function ($class) {
@@ -33,19 +34,25 @@ spl_autoload_register(function ($class) {
     $file_name = 'class-' . strtolower(preg_replace('/([a-zA-Z])(?=[A-Z])/', '$1-', $relative_class)) . '.php';
     $file = $base_dir . $file_name;
 
-    error_log('Tentative de chargement de la classe : ' . $class);
-    error_log('Recherche du fichier : ' . $file);
-    error_log('Le fichier existe : ' . (file_exists($file) ? 'oui' : 'non'));
+    if (UP_THEME_GENERATOR_DEBUG) {
+        error_log('Tentative de chargement de la classe : ' . $class);
+        error_log('Recherche du fichier : ' . $file);
+        error_log('Le fichier existe : ' . (file_exists($file) ? 'oui' : 'non'));
+    }
 
     if (file_exists($file)) {
         require $file;
-        error_log('Classe chargée : ' . $class);
+        if (UP_THEME_GENERATOR_DEBUG) {
+            error_log('Classe chargée : ' . $class);
+        }
     }
 });
 
 // Initialisation du plugin
 function up_theme_generator_init() {
-    error_log('Début de l\'initialisation du plugin');
+    if (UP_THEME_GENERATOR_DEBUG) {
+        error_log('Début de l\'initialisation du plugin');
+    }
     
     // Vérification des classes avant instanciation
     $required_classes = array(
@@ -69,7 +76,9 @@ function up_theme_generator_init() {
     }
 
     if (!empty($missing_files)) {
-        error_log('Fichiers manquants : ' . implode(', ', $missing_files));
+        if (UP_THEME_GENERATOR_DEBUG) {
+            error_log('Fichiers manquants : ' . implode(', ', $missing_files));
+        }
         add_action('admin_notices', function() use ($missing_files) {
             echo '<div class="error"><p>Fichiers manquants dans le plugin UP Theme Generator : ' . esc_html(implode(', ', $missing_files)) . '</p></div>';
         });
@@ -85,9 +94,13 @@ function up_theme_generator_init() {
         $fonts_manager = new UPThemeGenerator\FontsManager();
         $typography_manager = new UPThemeGenerator\TypographyManager();
         
-        error_log('Toutes les classes ont été instanciées avec succès');
+        if (UP_THEME_GENERATOR_DEBUG) {
+            error_log('Toutes les classes ont été instanciées avec succès');
+        }
     } catch (\Exception $e) {
-        error_log('Erreur lors de l\'initialisation : ' . $e->getMessage());
+        if (UP_THEME_GENERATOR_DEBUG) {
+            error_log('Erreur lors de l\'initialisation : ' . $e->getMessage());
+        }
         add_action('admin_notices', function() use ($e) {
             echo '<div class="error"><p>Erreur lors de l\'initialisation du plugin UP Theme Generator : ' . esc_html($e->getMessage()) . '</p></div>';
         });

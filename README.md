@@ -7,6 +7,14 @@ Plugin WordPress pour la génération et la gestion de thèmes FSE (Full Site Ed
 ### Gestion des Sections
 - Création de presets de sections
 - Personnalisation des couleurs (arrière-plan, texte, boutons, liens, titres)
+- Gestion avancée des polices :
+  - Famille de police (font-family)
+  - Graisse de police (font-weight) : de 100 à 900
+  - Style de police (font-style) : normal, italique
+- Support des éléments :
+  - Texte global
+  - Boutons
+  - Titres
 - Prévisualisation en direct
 - Support des blocs Gutenberg (Group, Columns, Cover)
 - CRUD complet des presets
@@ -16,6 +24,9 @@ Plugin WordPress pour la génération et la gestion de thèmes FSE (Full Site Ed
 - Support multi-polices (jusqu'à 3)
 - Import de polices personnalisées
 - Application aux thèmes existants
+- Support des variantes de police :
+  - Graisses multiples (100-900)
+  - Styles (normal, italique)
 
 ### Génération de Thèmes
 - Création de thèmes FSE
@@ -36,13 +47,14 @@ Plugin WordPress pour la génération et la gestion de thèmes FSE (Full Site Ed
 1. Aller dans "Sections"
 2. Sélectionner un thème
 3. Configurer les couleurs
-4. Choisir les types de blocs
-5. Sauvegarder
+4. Choisir les polices et leurs variantes
+5. Choisir les types de blocs
+6. Sauvegarder
 
 ### Gérer la Typographie
 1. Aller dans "Typographie"
 2. Créer un nouveau preset
-3. Sélectionner les polices
+3. Sélectionner les polices et leurs variantes
 4. Appliquer au thème
 
 ### Générer un Thème

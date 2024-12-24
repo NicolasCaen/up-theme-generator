@@ -68,16 +68,42 @@ if (!defined('ABSPATH')) {
                                     <?php endforeach; ?>
                                 </select>
                             </p>
-                            <p>
-            <label>Police du texte:</label>
-            <select name="text_font" class="font-select" data-default="var(--wp--preset--font-family--system)">
-                <?php foreach ($theme_fonts as $font): ?>
-                    <option value="var(--wp--preset--font-family--<?php echo esc_attr($font['slug']); ?>)">
-                        <?php echo esc_html($font['name']); ?>
-                    </option>
-                <?php endforeach; ?>
-            </select>
-        </p>
+                            <div class="font-settings">
+                                <p>
+                                    <label>Police du texte:</label>
+                                    <select name="text_font_family" class="font-select" data-default="inherit">
+                                        <option value="inherit">Police par défaut</option>
+                                        <?php foreach ($theme_fonts as $font): ?>
+                                            <option value="var(--wp--preset--font-family--<?php echo esc_attr($font['slug']); ?>)">
+                                                <?php echo esc_html($font['name']); ?>
+                                            </option>
+                                        <?php endforeach; ?>
+                                    </select>
+                                    <label class="sub-option">
+                                        <input type="checkbox" name="text_font_enabled" class="font-enable-checkbox">
+                                        Inclure dans le preset
+                                    </label>
+                                </p>
+                                <div class="font-additional-options">
+                                    <select name="text_font_weight" class="font-weight-select">
+                                        <option value="inherit">Graisse par défaut</option>
+                                        <option value="100">Thin (100)</option>
+                                        <option value="200">Extra Light (200)</option>
+                                        <option value="300">Light (300)</option>
+                                        <option value="400">Regular (400)</option>
+                                        <option value="500">Medium (500)</option>
+                                        <option value="600">Semi Bold (600)</option>
+                                        <option value="700">Bold (700)</option>
+                                        <option value="800">Extra Bold (800)</option>
+                                        <option value="900">Black (900)</option>
+                                    </select>
+                                    <select name="text_font_style" class="font-style-select">
+                                        <option value="inherit">Style par défaut</option>
+                                        <option value="normal">Normal</option>
+                                        <option value="italic">Italique</option>
+                                    </select>
+                                </div>
+                            </div>
                         </div>
 
                         <div class="element-styles">
@@ -106,16 +132,42 @@ if (!defined('ABSPATH')) {
                                         <?php endforeach; ?>
                                     </select>
                                 </p>
-                                <p>
-            <label>Police du bouton:</label>
-            <select name="button_font" class="font-select" data-default="var(--wp--preset--font-family--system)">
-                <?php foreach ($theme_fonts as $font): ?>
-                    <option value="var(--wp--preset--font-family--<?php echo esc_attr($font['slug']); ?>)">
-                        <?php echo esc_html($font['name']); ?>
-                    </option>
-                <?php endforeach; ?>
-            </select>
-        </p>
+                                <div class="font-settings">
+                                    <p>
+                                        <label>Police du bouton:</label>
+                                        <select name="button_font_family" class="font-select" data-default="inherit">
+                                            <option value="inherit">Police par défaut</option>
+                                            <?php foreach ($theme_fonts as $font): ?>
+                                                <option value="var(--wp--preset--font-family--<?php echo esc_attr($font['slug']); ?>)">
+                                                    <?php echo esc_html($font['name']); ?>
+                                                </option>
+                                            <?php endforeach; ?>
+                                        </select>
+                                        <label class="sub-option">
+                                            <input type="checkbox" name="button_font_enabled" class="font-enable-checkbox">
+                                            Inclure dans le preset
+                                        </label>
+                                    </p>
+                                    <div class="font-additional-options">
+                                        <select name="button_font_weight" class="font-weight-select">
+                                            <option value="inherit">Graisse par défaut</option>
+                                            <option value="100">Thin (100)</option>
+                                            <option value="200">Extra Light (200)</option>
+                                            <option value="300">Light (300)</option>
+                                            <option value="400">Regular (400)</option>
+                                            <option value="500">Medium (500)</option>
+                                            <option value="600">Semi Bold (600)</option>
+                                            <option value="700">Bold (700)</option>
+                                            <option value="800">Extra Bold (800)</option>
+                                            <option value="900">Black (900)</option>
+                                        </select>
+                                        <select name="button_font_style" class="font-style-select">
+                                            <option value="inherit">Style par défaut</option>
+                                            <option value="normal">Normal</option>
+                                            <option value="italic">Italique</option>
+                                        </select>
+                                    </div>
+                                </div>
                             </div>
 
                             <div class="element-group">
@@ -146,16 +198,42 @@ if (!defined('ABSPATH')) {
                                         <?php endforeach; ?>
                                     </select>
                                 </p>
-                                <p>
-            <label>Police du titre:</label>
-            <select name="heading_font" class="font-select" data-default="var(--wp--preset--font-family--heading)">
-                <?php foreach ($theme_fonts as $font): ?>
-                    <option value="var(--wp--preset--font-family--<?php echo esc_attr($font['slug']); ?>)">
-                        <?php echo esc_html($font['name']); ?>
-                    </option>
-                <?php endforeach; ?>
-            </select>
-        </p>
+                                <div class="font-settings">
+                                    <p>
+                                        <label>Police du titre:</label>
+                                        <select name="heading_font_family" class="font-select" data-default="inherit">
+                                            <option value="inherit">Police par défaut</option>
+                                            <?php foreach ($theme_fonts as $font): ?>
+                                                <option value="var(--wp--preset--font-family--<?php echo esc_attr($font['slug']); ?>)">
+                                                    <?php echo esc_html($font['name']); ?>
+                                                </option>
+                                            <?php endforeach; ?>
+                                        </select>
+                                        <label class="sub-option">
+                                            <input type="checkbox" name="heading_font_enabled" class="font-enable-checkbox">
+                                            Inclure dans le preset
+                                        </label>
+                                    </p>
+                                    <div class="font-additional-options">
+                                        <select name="heading_font_weight" class="font-weight-select">
+                                            <option value="inherit">Graisse par défaut</option>
+                                            <option value="100">Thin (100)</option>
+                                            <option value="200">Extra Light (200)</option>
+                                            <option value="300">Light (300)</option>
+                                            <option value="400">Regular (400)</option>
+                                            <option value="500">Medium (500)</option>
+                                            <option value="600">Semi Bold (600)</option>
+                                            <option value="700">Bold (700)</option>
+                                            <option value="800">Extra Bold (800)</option>
+                                            <option value="900">Black (900)</option>
+                                        </select>
+                                        <select name="heading_font_style" class="font-style-select">
+                                            <option value="inherit">Style par défaut</option>
+                                            <option value="normal">Normal</option>
+                                            <option value="italic">Italique</option>
+                                        </select>
+                                    </div>
+                                </div>
                             </div>
                         </div>
 

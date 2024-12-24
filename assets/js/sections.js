@@ -20,35 +20,56 @@ jQuery(document).ready(function($) {
 
     // Fonction pour générer le contenu du bloc d'exemple
     function generateBlockContent(blockType) {
+        const textStyles = getFontStyles('text');
+        const buttonStyles = getFontStyles('button');
+        const headingStyles = getFontStyles('heading');
+
         const commonStyles = {
             backgroundColor: $('select[name="background_color"] option:selected').data('color'),
             color: $('select[name="text_color"] option:selected').data('color'),
-            fontFamily: $('select[name="text_font"]').val()
+            ...(textStyles.fontFamily && { fontFamily: textStyles.fontFamily }),
+            ...(textStyles.fontWeight && { fontWeight: textStyles.fontWeight }),
+            ...(textStyles.fontStyle && { fontStyle: textStyles.fontStyle })
         };
 
-        const buttonStyles = {
+        const buttonCss = {
             backgroundColor: $('select[name="button_background"] option:selected').data('color'),
             color: $('select[name="button_text"] option:selected').data('color'),
-            fontFamily: $('select[name="button_font"]').val()
+            ...(buttonStyles.fontFamily && { fontFamily: buttonStyles.fontFamily }),
+            ...(buttonStyles.fontWeight && { fontWeight: buttonStyles.fontWeight }),
+            ...(buttonStyles.fontStyle && { fontStyle: buttonStyles.fontStyle })
         };
 
-        const headingStyles = {
+        const headingCss = {
             color: $('select[name="heading_text"] option:selected').data('color'),
-            fontFamily: $('select[name="heading_font"]').val()
+            ...(headingStyles.fontFamily && { fontFamily: headingStyles.fontFamily }),
+            ...(headingStyles.fontWeight && { fontWeight: headingStyles.fontWeight }),
+            ...(headingStyles.fontStyle && { fontStyle: headingStyles.fontStyle })
         };
 
-        const linkColor = $('select[name="link_text"] option:selected').data('color');
+        // Convertir les objets de style en chaînes CSS
+        const commonStylesStr = Object.entries(commonStyles)
+            .map(([key, value]) => `${key.replace(/([A-Z])/g, '-$1').toLowerCase()}: ${value}`)
+            .join('; ');
+
+        const buttonStylesStr = Object.entries(buttonCss)
+            .map(([key, value]) => `${key.replace(/([A-Z])/g, '-$1').toLowerCase()}: ${value}`)
+            .join('; ');
+
+        const headingStylesStr = Object.entries(headingCss)
+            .map(([key, value]) => `${key.replace(/([A-Z])/g, '-$1').toLowerCase()}: ${value}`)
+            .join('; ');
 
         let content = '';
         switch(blockType) {
             case 'core/group':
                 content = `
                     <div class="wp-block-group" style="background-color: ${commonStyles.backgroundColor}; padding: 2em;">
-                        <div class="preview-section" style="color: ${commonStyles.color}; font-family: ${commonStyles.fontFamily};">
-                            <h2 class="preview-heading" style="color: ${headingStyles.color}; font-family: ${headingStyles.fontFamily}">Titre d'exemple</h2>
-                            <p class="preview-text">Voici un exemple de contenu avec un <a href="#" style="color: ${linkColor}">lien</a>.</p>
+                        <div class="preview-section" style="${commonStylesStr}">
+                            <h2 class="preview-heading" style="${headingStylesStr}">Titre d'exemple</h2>
+                            <p class="preview-text">Voici un exemple de contenu avec un <a href="#" style="color: ${$('select[name="link_text"] option:selected').data('color')}">lien</a>.</p>
                             <div class="wp-block-button">
-                                <a class="preview-button wp-block-button__link" style="background-color: ${buttonStyles.backgroundColor}; color: ${buttonStyles.color}; font-family: ${buttonStyles.fontFamily}">Bouton d'exemple</a>
+                                <a class="preview-button wp-block-button__link" style="${buttonStylesStr}">Bouton d'exemple</a>
                             </div>
                         </div>
                     </div>`;
@@ -57,16 +78,16 @@ jQuery(document).ready(function($) {
             case 'core/columns':
                 content = `
                     <div class="wp-block-columns" style="background-color: ${commonStyles.backgroundColor}; padding: 2em;">
-                        <div class="preview-section" style="color: ${commonStyles.color}; font-family: ${commonStyles.fontFamily};">
+                        <div class="preview-section" style="${commonStylesStr}">
                             <div class="wp-block-column">
-                                <h2 class="preview-heading" style="color: ${headingStyles.color}; font-family: ${headingStyles.fontFamily}">Colonne 1</h2>
-                                <p class="preview-text">Contenu avec <a href="#" style="color: ${linkColor}">lien</a>.</p>
+                                <h2 class="preview-heading" style="${headingStylesStr}">Colonne 1</h2>
+                                <p class="preview-text">Contenu avec <a href="#" style="color: ${$('select[name="link_text"] option:selected').data('color')}">lien</a>.</p>
                                 <div class="wp-block-button">
-                                    <a class="preview-button wp-block-button__link" style="background-color: ${buttonStyles.backgroundColor}; color: ${buttonStyles.color}; font-family: ${buttonStyles.fontFamily}">Bouton</a>
+                                    <a class="preview-button wp-block-button__link" style="${buttonStylesStr}">Bouton</a>
                                 </div>
                             </div>
                             <div class="wp-block-column">
-                                <h2 class="preview-heading" style="color: ${headingStyles.color}; font-family: ${headingStyles.fontFamily}">Colonne 2</h2>
+                                <h2 class="preview-heading" style="${headingStylesStr}">Colonne 2</h2>
                                 <p class="preview-text">Autre contenu d'exemple.</p>
                             </div>
                         </div>
@@ -76,11 +97,11 @@ jQuery(document).ready(function($) {
             case 'core/cover':
                 content = `
                     <div class="wp-block-cover" style="background-color: ${commonStyles.backgroundColor}; min-height: 300px;">
-                        <div class="preview-section wp-block-cover__inner-container" style="color: ${commonStyles.color}; font-family: ${commonStyles.fontFamily};">
-                            <h2 class="preview-heading" style="color: ${headingStyles.color}; font-family: ${headingStyles.fontFamily}">Titre Cover</h2>
-                            <p class="preview-text">Texte sur l'image de fond avec <a href="#" style="color: ${linkColor}">lien</a>.</p>
+                        <div class="preview-section wp-block-cover__inner-container" style="${commonStylesStr}">
+                            <h2 class="preview-heading" style="${headingStylesStr}">Titre Cover</h2>
+                            <p class="preview-text">Texte sur l'image de fond avec <a href="#" style="color: ${$('select[name="link_text"] option:selected').data('color')}">lien</a>.</p>
                             <div class="wp-block-button">
-                                <a class="preview-button wp-block-button__link" style="background-color: ${buttonStyles.backgroundColor}; color: ${buttonStyles.color}; font-family: ${buttonStyles.fontFamily}">Bouton Cover</a>
+                                <a class="preview-button wp-block-button__link" style="${buttonStylesStr}">Bouton Cover</a>
                             </div>
                         </div>
                     </div>`;
@@ -89,49 +110,108 @@ jQuery(document).ready(function($) {
         return content;
     }
 
-    // Fonction de mise à jour de l'aperçu
+    // Écouter tous les changements qui doivent déclencher une mise à jour
+    function bindPreviewUpdates() {
+        // Sélecteurs de couleur
+        $('.color-select').on('change', updatePreview);
+        
+        // Sélecteurs de police et leurs options
+        $('.font-select, .font-weight-select, .font-style-select').on('change', updatePreview);
+        
+        // Cases à cocher d'activation de police
+        $('.font-enable-checkbox').on('change', function() {
+            const $container = $(this).closest('.font-settings');
+            const $additionalOptions = $container.find('.font-additional-options');
+            const $fontSelect = $container.find('.font-select');
+            
+            if (this.checked) {
+                $additionalOptions.slideDown();
+                $fontSelect.prop('disabled', false);
+            } else {
+                $additionalOptions.slideUp();
+                $fontSelect.prop('disabled', true).val('inherit');
+                $additionalOptions.find('select').val('inherit');
+            }
+            
+            // Mettre à jour la prévisualisation après le changement
+            updatePreview();
+        });
+        
+        // Type de bloc
+        $('#preview-block-type').on('change', updatePreview);
+        
+        // Bouton de rafraîchissement
+        $('#refresh-preview').on('click', updatePreview);
+    }
+
+    // Initialiser les écouteurs d'événements
+    bindPreviewUpdates();
+
+    // Initialiser la prévisualisation au chargement
+    updatePreview();
+
+    // Fonction getFontStyles mise à jour
+    function getFontStyles(prefix) {
+        const enabled = $(`input[name="${prefix}_font_enabled"]`).is(':checked');
+        if (!enabled) {
+            return {};
+        }
+
+        const styles = {};
+        const fontFamily = $(`select[name="${prefix}_font_family"]`).val();
+        const fontWeight = $(`select[name="${prefix}_font_weight"]`).val();
+        const fontStyle = $(`select[name="${prefix}_font_style"]`).val();
+
+        if (fontFamily !== 'inherit') styles.fontFamily = fontFamily;
+        if (fontWeight !== 'inherit') styles.fontWeight = fontWeight;
+        if (fontStyle !== 'inherit') styles.fontStyle = fontStyle;
+
+        return styles;
+    }
+
+    // Fonction updatePreview mise à jour
     function updatePreview() {
         const blockType = $('#preview-block-type').val();
         const content = generateBlockContent(blockType);
         $('#block-preview-container').html(content);
 
-        // Mise à jour des styles en direct
-        const previewSection = $('.preview-section');
-        const previewHeading = $('.preview-heading');
-        const previewButton = $('.preview-button');
-        const previewText = $('.preview-text');
+        requestAnimationFrame(() => {
+            const textStyles = getFontStyles('text');
+            const buttonStyles = getFontStyles('button');
+            const headingStyles = getFontStyles('heading');
 
-        // Appliquer les couleurs et polices sélectionnées
-        previewSection.css({
-            'background-color': $('select[name="background_color"] option:selected').data('color'),
-            'color': $('select[name="text_color"] option:selected').data('color'),
-            'font-family': $('select[name="text_font"]').val()
-        });
+            // Appliquer les styles de texte global
+            $('.preview-section').css({
+                'background-color': $('select[name="background_color"] option:selected').data('color'),
+                'color': $('select[name="text_color"] option:selected').data('color'),
+                ...(textStyles.fontFamily && { 'font-family': textStyles.fontFamily }),
+                ...(textStyles.fontWeight && { 'font-weight': textStyles.fontWeight }),
+                ...(textStyles.fontStyle && { 'font-style': textStyles.fontStyle })
+            });
 
-        previewHeading.css({
-            'color': $('select[name="heading_text"] option:selected').data('color'),
-            'font-family': $('select[name="heading_font"]').val()
-        });
-        
-        previewButton.css({
-            'background-color': $('select[name="button_background"] option:selected').data('color'),
-            'color': $('select[name="button_text"] option:selected').data('color'),
-            'font-family': $('select[name="button_font"]').val()
-        });
+            // Appliquer les styles des titres
+            $('.preview-heading').css({
+                'color': $('select[name="heading_text"] option:selected').data('color'),
+                ...(headingStyles.fontFamily && { 'font-family': headingStyles.fontFamily }),
+                ...(headingStyles.fontWeight && { 'font-weight': headingStyles.fontWeight }),
+                ...(headingStyles.fontStyle && { 'font-style': headingStyles.fontStyle })
+            });
 
-        // Mettre à jour les styles des liens
-        $('.preview-section a:not(.preview-button)').css({
-            'color': $('select[name="link_text"] option:selected').data('color')
+            // Appliquer les styles des boutons
+            $('.preview-button').css({
+                'background-color': $('select[name="button_background"] option:selected').data('color'),
+                'color': $('select[name="button_text"] option:selected').data('color'),
+                ...(buttonStyles.fontFamily && { 'font-family': buttonStyles.fontFamily }),
+                ...(buttonStyles.fontWeight && { 'font-weight': buttonStyles.fontWeight }),
+                ...(buttonStyles.fontStyle && { 'font-style': buttonStyles.fontStyle })
+            });
+
+            // Mettre à jour les liens
+            $('.preview-section a:not(.preview-button)').css({
+                'color': $('select[name="link_text"] option:selected').data('color')
+            });
         });
     }
-
-    // Ajouter les événements pour la mise à jour de l'aperçu
-    $('.color-select, .font-select').on('change', updatePreview);
-    $('#preview-block-type').on('change', updatePreview);
-    $('#refresh-preview').on('click', updatePreview);
-
-    // Initialisation
-    updatePreview();
 
     // Gérer la modification d'un preset
     $('.edit-preset').on('click', function() {

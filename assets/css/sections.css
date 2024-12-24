@@ -81,6 +81,9 @@ label {
     border: 1px solid #ddd;
     border-radius: 4px;
     padding: 20px;
+    position: sticky;
+    top: 150px;
+
 }
 
 .preview-toolbar {

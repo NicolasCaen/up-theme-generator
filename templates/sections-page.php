@@ -68,6 +68,16 @@ if (!defined('ABSPATH')) {
                                     <?php endforeach; ?>
                                 </select>
                             </p>
+                            <p>
+            <label>Police du texte:</label>
+            <select name="text_font" class="font-select" data-default="var(--wp--preset--font-family--system)">
+                <?php foreach ($theme_fonts as $font): ?>
+                    <option value="var(--wp--preset--font-family--<?php echo esc_attr($font['slug']); ?>)">
+                        <?php echo esc_html($font['name']); ?>
+                    </option>
+                <?php endforeach; ?>
+            </select>
+        </p>
                         </div>
 
                         <div class="element-styles">
@@ -96,6 +106,16 @@ if (!defined('ABSPATH')) {
                                         <?php endforeach; ?>
                                     </select>
                                 </p>
+                                <p>
+            <label>Police du bouton:</label>
+            <select name="button_font" class="font-select" data-default="var(--wp--preset--font-family--system)">
+                <?php foreach ($theme_fonts as $font): ?>
+                    <option value="var(--wp--preset--font-family--<?php echo esc_attr($font['slug']); ?>)">
+                        <?php echo esc_html($font['name']); ?>
+                    </option>
+                <?php endforeach; ?>
+            </select>
+        </p>
                             </div>
 
                             <div class="element-group">
@@ -126,6 +146,16 @@ if (!defined('ABSPATH')) {
                                         <?php endforeach; ?>
                                     </select>
                                 </p>
+                                <p>
+            <label>Police du titre:</label>
+            <select name="heading_font" class="font-select" data-default="var(--wp--preset--font-family--heading)">
+                <?php foreach ($theme_fonts as $font): ?>
+                    <option value="var(--wp--preset--font-family--<?php echo esc_attr($font['slug']); ?>)">
+                        <?php echo esc_html($font['name']); ?>
+                    </option>
+                <?php endforeach; ?>
+            </select>
+        </p>
                             </div>
                         </div>
 

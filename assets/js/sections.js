@@ -23,42 +23,52 @@ jQuery(document).ready(function($) {
         const commonStyles = {
             backgroundColor: $('select[name="background_color"] option:selected').data('color'),
             color: $('select[name="text_color"] option:selected').data('color'),
+            fontFamily: $('select[name="text_font"]').val()
         };
 
         const buttonStyles = {
             backgroundColor: $('select[name="button_background"] option:selected').data('color'),
             color: $('select[name="button_text"] option:selected').data('color'),
+            fontFamily: $('select[name="button_font"]').val()
         };
 
-        const headingColor = $('select[name="heading_text"] option:selected').data('color');
+        const headingStyles = {
+            color: $('select[name="heading_text"] option:selected').data('color'),
+            fontFamily: $('select[name="heading_font"]').val()
+        };
+
         const linkColor = $('select[name="link_text"] option:selected').data('color');
 
         let content = '';
         switch(blockType) {
             case 'core/group':
                 content = `
-                    <div class="wp-block-group" style="background-color: ${commonStyles.backgroundColor}; color: ${commonStyles.color}; padding: 2em;">
-                        <h2 style="color: ${headingColor}">Titre d'exemple</h2>
-                        <p>Voici un exemple de contenu avec un <a href="#" style="color: ${linkColor}">lien</a>.</p>
-                        <div class="wp-block-button">
-                            <a class="wp-block-button__link" style="background-color: ${buttonStyles.backgroundColor}; color: ${buttonStyles.color};">Bouton d'exemple</a>
+                    <div class="wp-block-group" style="background-color: ${commonStyles.backgroundColor}; padding: 2em;">
+                        <div class="preview-section" style="color: ${commonStyles.color}; font-family: ${commonStyles.fontFamily};">
+                            <h2 class="preview-heading" style="color: ${headingStyles.color}; font-family: ${headingStyles.fontFamily}">Titre d'exemple</h2>
+                            <p class="preview-text">Voici un exemple de contenu avec un <a href="#" style="color: ${linkColor}">lien</a>.</p>
+                            <div class="wp-block-button">
+                                <a class="preview-button wp-block-button__link" style="background-color: ${buttonStyles.backgroundColor}; color: ${buttonStyles.color}; font-family: ${buttonStyles.fontFamily}">Bouton d'exemple</a>
+                            </div>
                         </div>
                     </div>`;
                 break;
 
             case 'core/columns':
                 content = `
-                    <div class="wp-block-columns" style="background-color: ${commonStyles.backgroundColor}; color: ${commonStyles.color}; padding: 2em;">
-                        <div class="wp-block-column">
-                            <h2 style="color: ${headingColor}">Colonne 1</h2>
-                            <p>Contenu avec <a href="#" style="color: ${linkColor}">lien</a>.</p>
-                            <div class="wp-block-button">
-                                <a class="wp-block-button__link" style="background-color: ${buttonStyles.backgroundColor}; color: ${buttonStyles.color};">Bouton</a>
+                    <div class="wp-block-columns" style="background-color: ${commonStyles.backgroundColor}; padding: 2em;">
+                        <div class="preview-section" style="color: ${commonStyles.color}; font-family: ${commonStyles.fontFamily};">
+                            <div class="wp-block-column">
+                                <h2 class="preview-heading" style="color: ${headingStyles.color}; font-family: ${headingStyles.fontFamily}">Colonne 1</h2>
+                                <p class="preview-text">Contenu avec <a href="#" style="color: ${linkColor}">lien</a>.</p>
+                                <div class="wp-block-button">
+                                    <a class="preview-button wp-block-button__link" style="background-color: ${buttonStyles.backgroundColor}; color: ${buttonStyles.color}; font-family: ${buttonStyles.fontFamily}">Bouton</a>
+                                </div>
                             </div>
-                        </div>
-                        <div class="wp-block-column">
-                            <h2 style="color: ${headingColor}">Colonne 2</h2>
-                            <p>Autre contenu d'exemple.</p>
+                            <div class="wp-block-column">
+                                <h2 class="preview-heading" style="color: ${headingStyles.color}; font-family: ${headingStyles.fontFamily}">Colonne 2</h2>
+                                <p class="preview-text">Autre contenu d'exemple.</p>
+                            </div>
                         </div>
                     </div>`;
                 break;
@@ -66,11 +76,11 @@ jQuery(document).ready(function($) {
             case 'core/cover':
                 content = `
                     <div class="wp-block-cover" style="background-color: ${commonStyles.backgroundColor}; min-height: 300px;">
-                        <div class="wp-block-cover__inner-container" style="color: ${commonStyles.color};">
-                            <h2 style="color: ${headingColor}">Titre Cover</h2>
-                            <p>Texte sur l'image de fond avec <a href="#" style="color: ${linkColor}">lien</a>.</p>
+                        <div class="preview-section wp-block-cover__inner-container" style="color: ${commonStyles.color}; font-family: ${commonStyles.fontFamily};">
+                            <h2 class="preview-heading" style="color: ${headingStyles.color}; font-family: ${headingStyles.fontFamily}">Titre Cover</h2>
+                            <p class="preview-text">Texte sur l'image de fond avec <a href="#" style="color: ${linkColor}">lien</a>.</p>
                             <div class="wp-block-button">
-                                <a class="wp-block-button__link" style="background-color: ${buttonStyles.backgroundColor}; color: ${buttonStyles.color};">Bouton Cover</a>
+                                <a class="preview-button wp-block-button__link" style="background-color: ${buttonStyles.backgroundColor}; color: ${buttonStyles.color}; font-family: ${buttonStyles.fontFamily}">Bouton Cover</a>
                             </div>
                         </div>
                     </div>`;
@@ -89,28 +99,36 @@ jQuery(document).ready(function($) {
         const previewSection = $('.preview-section');
         const previewHeading = $('.preview-heading');
         const previewButton = $('.preview-button');
-        const previewLink = $('.preview-link');
+        const previewText = $('.preview-text');
 
-        // Appliquer les couleurs sélectionnées
+        // Appliquer les couleurs et polices sélectionnées
         previewSection.css({
             'background-color': $('select[name="background_color"] option:selected').data('color'),
-            'color': $('select[name="text_color"] option:selected').data('color')
+            'color': $('select[name="text_color"] option:selected').data('color'),
+            'font-family': $('select[name="text_font"]').val()
         });
 
-        previewHeading.css('color', $('select[name="heading_text"] option:selected').data('color'));
+        previewHeading.css({
+            'color': $('select[name="heading_text"] option:selected').data('color'),
+            'font-family': $('select[name="heading_font"]').val()
+        });
         
         previewButton.css({
             'background-color': $('select[name="button_background"] option:selected').data('color'),
-            'color': $('select[name="button_text"] option:selected').data('color')
+            'color': $('select[name="button_text"] option:selected').data('color'),
+            'font-family': $('select[name="button_font"]').val()
         });
 
-        previewLink.css('color', $('select[name="link_text"] option:selected').data('color'));
+        // Mettre à jour les styles des liens
+        $('.preview-section a:not(.preview-button)').css({
+            'color': $('select[name="link_text"] option:selected').data('color')
+        });
     }
 
-    // Événements
+    // Ajouter les événements pour la mise à jour de l'aperçu
+    $('.color-select, .font-select').on('change', updatePreview);
     $('#preview-block-type').on('change', updatePreview);
     $('#refresh-preview').on('click', updatePreview);
-    $('.color-select').on('change', updatePreview);
 
     // Initialisation
     updatePreview();

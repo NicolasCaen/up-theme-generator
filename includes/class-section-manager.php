@@ -37,6 +37,17 @@ class SectionManager {
             }
         }
         
+        // Récupérer les polices du thème
+        $theme_json_path = WP_CONTENT_DIR . '/themes/' . $theme_slug . '/theme.json';
+        $theme_fonts = array();
+        
+        if (file_exists($theme_json_path)) {
+            $theme_json = json_decode(file_get_contents($theme_json_path), true);
+            if (isset($theme_json['settings']['typography']['fontFamilies'])) {
+                $theme_fonts = $theme_json['settings']['typography']['fontFamilies'];
+            }
+        }
+        
         // Passer les couleurs au template
         include UP_THEME_GENERATOR_PATH . 'templates/sections-page.php';
     }
@@ -146,21 +157,25 @@ class SectionManager {
                         'background' => sanitize_text_field($_POST['background_color']),
                         'text' => sanitize_text_field($_POST['text_color'])
                     ),
+                    'typography' => array(
+                        'fontFamily' => sanitize_text_field($_POST['text_font'])
+                    ),
                     'elements' => array(
                         'button' => array(
                             'color' => array(
                                 'background' => sanitize_text_field($_POST['button_background']),
                                 'text' => sanitize_text_field($_POST['button_text'])
-                            )
-                        ),
-                        'link' => array(
-                            'color' => array(
-                                'text' => sanitize_text_field($_POST['link_text'])
+                            ),
+                            'typography' => array(
+                                'fontFamily' => sanitize_text_field($_POST['button_font'])
                             )
                         ),
                         'heading' => array(
                             'color' => array(
                                 'text' => sanitize_text_field($_POST['heading_text'])
+                            ),
+                            'typography' => array(
+                                'fontFamily' => sanitize_text_field($_POST['heading_font'])
                             )
                         )
                     )
@@ -209,9 +224,11 @@ class SectionManager {
             $theme_json_path = WP_CONTENT_DIR . '/themes/' . $theme_slug . '/theme.json';
             if (file_exists($theme_json_path)) {
                 $theme_json = json_decode(file_get_contents($theme_json_path), true);
+                $theme_url = get_theme_root_uri() . '/' . $theme_slug;
                 
-                // Générer le CSS des variables de couleur
                 $custom_css = ':root {';
+                
+                // Variables de couleur
                 if (isset($theme_json['settings']['color']['palette'])) {
                     foreach ($theme_json['settings']['color']['palette'] as $color) {
                         $custom_css .= sprintf(
@@ -221,9 +238,53 @@ class SectionManager {
                         );
                     }
                 }
+                
+                // Variables de police
+                if (isset($theme_json['settings']['typography']['fontFamilies'])) {
+                    foreach ($theme_json['settings']['typography']['fontFamilies'] as $font) {
+                        $fontFamily = is_array($font['fontFamily']) ? implode(', ', $font['fontFamily']) : $font['fontFamily'];
+                        $custom_css .= sprintf(
+                            '--wp--preset--font-family--%s: %s;',
+                            $font['slug'],
+                            $fontFamily
+                        );
+                    }
+                }
+                
                 $custom_css .= '}';
                 
-                // Enregistrer et charger le CSS personnalisé
+                // Ajouter les règles @font-face avec les URLs complètes
+                if (isset($theme_json['settings']['typography']['fontFamilies'])) {
+                    foreach ($theme_json['settings']['typography']['fontFamilies'] as $font) {
+                        if (isset($font['fontFace'])) {
+                            foreach ($font['fontFace'] as $fontFace) {
+                                // Convertir les chemins relatifs en URLs complètes
+                                if (isset($fontFace['src'])) {
+                                    $src = is_array($fontFace['src']) ? $fontFace['src'] : array($fontFace['src']);
+                                    $fontFace['src'] = array_map(function($path) use ($theme_url) {
+                                        // Si le chemin commence par '/', supprimer le premier '/'
+                                        $path = ltrim($path, '/');
+                                        return $theme_url . '/' . $path;
+                                    }, $src);
+                                }
+                                
+                                $custom_css .= sprintf(
+                                    '@font-face {
+                                        font-family: "%s";
+                                        src: %s;
+                                        font-weight: %s;
+                                        font-style: %s;
+                                    }',
+                                    $font['fontFamily'],
+                                    $this->generate_font_src($fontFace),
+                                    $fontFace['fontWeight'] ?? 'normal',
+                                    $fontFace['fontStyle'] ?? 'normal'
+                                );
+                            }
+                        }
+                    }
+                }
+                
                 wp_add_inline_style(
                     'wp-block-library',
                     $custom_css
@@ -256,6 +317,27 @@ class SectionManager {
                 'nonce' => wp_create_nonce('up_theme_generator_nonce')
             )
         );
+    }
+
+    private function generate_font_src($fontFace) {
+        $srcs = array();
+        
+        if (isset($fontFace['src'])) {
+            $src = is_array($fontFace['src']) ? $fontFace['src'] : array($fontFace['src']);
+            foreach ($src as $url) {
+                if (strpos($url, '.woff2') !== false) {
+                    $srcs[] = sprintf("url('%s') format('woff2')", $url);
+                } elseif (strpos($url, '.woff') !== false) {
+                    $srcs[] = sprintf("url('%s') format('woff')", $url);
+                } elseif (strpos($url, '.ttf') !== false) {
+                    $srcs[] = sprintf("url('%s') format('truetype')", $url);
+                } elseif (strpos($url, '.otf') !== false) {
+                    $srcs[] = sprintf("url('%s') format('opentype')", $url);
+                }
+            }
+        }
+        
+        return implode(', ', $srcs);
     }
 
     public function ajax_delete_section_preset() {

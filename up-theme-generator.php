@@ -60,7 +60,8 @@ function up_theme_generator_init() {
         'UPThemeGenerator\View',
         'UPThemeGenerator\AdminMenu',
         'UPThemeGenerator\Assets',
-        'UPThemeGenerator\ThemeGenerator'
+        'UPThemeGenerator\ThemeGenerator',
+        'UPThemeGenerator\BlockStylesManager'
     );
 
     // Vérification des fichiers requis
@@ -93,7 +94,8 @@ function up_theme_generator_init() {
         $theme_generator = new UPThemeGenerator\ThemeGenerator();
         $fonts_manager = new UPThemeGenerator\FontsManager();
         $typography_manager = new UPThemeGenerator\TypographyManager();
-        $section_manager = new UPThemeGenerator\SectionManager();  
+        $section_manager = new UPThemeGenerator\SectionManager();
+        $block_styles_manager = new UPThemeGenerator\BlockStylesManager();
         
         if (UP_THEME_GENERATOR_DEBUG) {
             error_log('Toutes les classes ont été instanciées avec succès');

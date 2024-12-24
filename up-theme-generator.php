@@ -93,6 +93,7 @@ function up_theme_generator_init() {
         $theme_generator = new UPThemeGenerator\ThemeGenerator();
         $fonts_manager = new UPThemeGenerator\FontsManager();
         $typography_manager = new UPThemeGenerator\TypographyManager();
+        $section_manager = new UPThemeGenerator\SectionManager();  
         
         if (UP_THEME_GENERATOR_DEBUG) {
             error_log('Toutes les classes ont été instanciées avec succès');

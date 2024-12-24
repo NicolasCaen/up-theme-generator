@@ -160,51 +160,65 @@ class SectionManager {
                 )
             );
 
-            // Ajouter les styles de police seulement s'ils sont activés
-            if (isset($_POST['text_font_enabled']) && $_POST['text_font_enabled'] === 'on') {
-                $preset_data['styles']['typography'] = array(
-                    'fontFamily' => sanitize_text_field($_POST['text_font_family']),
-                    'fontWeight' => sanitize_text_field($_POST['text_font_weight']),
-                    'fontStyle' => sanitize_text_field($_POST['text_font_style'])
-                );
+            // Ajouter les styles de typographie s'ils ne sont pas sur "inherit"
+            $typography = array();
+            if ($_POST['text_font_family'] !== 'inherit') {
+                $typography['fontFamily'] = sanitize_text_field($_POST['text_font_family']);
+            }
+            if ($_POST['text_font_weight'] !== 'inherit') {
+                $typography['fontWeight'] = sanitize_text_field($_POST['text_font_weight']);
+            }
+            if ($_POST['text_font_style'] !== 'inherit') {
+                $typography['fontStyle'] = sanitize_text_field($_POST['text_font_style']);
+            }
+            if (!empty($typography)) {
+                $preset_data['styles']['typography'] = $typography;
             }
 
             // Gérer les éléments
             $preset_data['styles']['elements'] = array();
 
             // Boutons
-            if (isset($_POST['button_font_enabled']) && $_POST['button_font_enabled'] === 'on') {
-                $preset_data['styles']['elements']['button'] = array(
-                    'color' => array(
-                        'background' => sanitize_text_field($_POST['button_background']),
-                        'text' => sanitize_text_field($_POST['button_text'])
-                    ),
-                    'typography' => array(
-                        'fontFamily' => sanitize_text_field($_POST['button_font_family']),
-                        'fontWeight' => sanitize_text_field($_POST['button_font_weight']),
-                        'fontStyle' => sanitize_text_field($_POST['button_font_style'])
-                    )
-                );
+            $button_typography = array();
+            if ($_POST['button_font_family'] !== 'inherit') {
+                $button_typography['fontFamily'] = sanitize_text_field($_POST['button_font_family']);
+            }
+            if ($_POST['button_font_weight'] !== 'inherit') {
+                $button_typography['fontWeight'] = sanitize_text_field($_POST['button_font_weight']);
+            }
+            if ($_POST['button_font_style'] !== 'inherit') {
+                $button_typography['fontStyle'] = sanitize_text_field($_POST['button_font_style']);
+            }
+
+            $preset_data['styles']['elements']['button'] = array(
+                'color' => array(
+                    'background' => sanitize_text_field($_POST['button_background']),
+                    'text' => sanitize_text_field($_POST['button_text'])
+                )
+            );
+            if (!empty($button_typography)) {
+                $preset_data['styles']['elements']['button']['typography'] = $button_typography;
             }
 
             // Titres
-            if (isset($_POST['heading_font_enabled']) && $_POST['heading_font_enabled'] === 'on') {
-                $preset_data['styles']['elements']['heading'] = array(
-                    'color' => array(
-                        'text' => sanitize_text_field($_POST['heading_text'])
-                    ),
-                    'typography' => array(
-                        'fontFamily' => sanitize_text_field($_POST['heading_font_family']),
-                        'fontWeight' => sanitize_text_field($_POST['heading_font_weight']),
-                        'fontStyle' => sanitize_text_field($_POST['heading_font_style'])
-                    )
-                );
-            } else {
-                $preset_data['styles']['elements']['heading'] = array(
-                    'color' => array(
-                        'text' => sanitize_text_field($_POST['heading_text'])
-                    )
-                );
+            $heading_typography = array();
+            if ($_POST['heading_font_family'] !== 'inherit') {
+                $heading_typography['fontFamily'] = sanitize_text_field($_POST['heading_font_family']);
+            }
+            if ($_POST['heading_font_weight'] !== 'inherit') {
+                $heading_typography['fontWeight'] = sanitize_text_field($_POST['heading_font_weight']);
+            }
+            if ($_POST['heading_font_style'] !== 'inherit') {
+                $heading_typography['fontStyle'] = sanitize_text_field($_POST['heading_font_style']);
+            }
+
+            $preset_data['styles']['elements']['heading'] = array(
+                'color' => array(
+                    'text' => sanitize_text_field($_POST['heading_text'])
+                )
+            );
+            if (!empty($heading_typography)) {
+                $preset_data['styles']['elements']['heading']['typography'] = $heading_typography;
             }
 
             // Créer le dossier si nécessaire

@@ -79,10 +79,6 @@ if (!defined('ABSPATH')) {
                                             </option>
                                         <?php endforeach; ?>
                                     </select>
-                                    <label class="sub-option">
-                                        <input type="checkbox" name="text_font_enabled" class="font-enable-checkbox">
-                                        Inclure dans le preset
-                                    </label>
                                 </p>
                                 <div class="font-additional-options">
                                     <select name="text_font_weight" class="font-weight-select">
@@ -143,10 +139,6 @@ if (!defined('ABSPATH')) {
                                                 </option>
                                             <?php endforeach; ?>
                                         </select>
-                                        <label class="sub-option">
-                                            <input type="checkbox" name="button_font_enabled" class="font-enable-checkbox">
-                                            Inclure dans le preset
-                                        </label>
                                     </p>
                                     <div class="font-additional-options">
                                         <select name="button_font_weight" class="font-weight-select">
@@ -209,10 +201,6 @@ if (!defined('ABSPATH')) {
                                                 </option>
                                             <?php endforeach; ?>
                                         </select>
-                                        <label class="sub-option">
-                                            <input type="checkbox" name="heading_font_enabled" class="font-enable-checkbox">
-                                            Inclure dans le preset
-                                        </label>
                                     </p>
                                     <div class="font-additional-options">
                                         <select name="heading_font_weight" class="font-weight-select">

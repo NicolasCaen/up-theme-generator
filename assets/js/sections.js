@@ -150,13 +150,8 @@ jQuery(document).ready(function($) {
     // Initialiser la prévisualisation au chargement
     updatePreview();
 
-    // Fonction getFontStyles mise à jour
+    // Fonction getFontStyles simplifiée
     function getFontStyles(prefix) {
-        const enabled = $(`input[name="${prefix}_font_enabled"]`).is(':checked');
-        if (!enabled) {
-            return {};
-        }
-
         const styles = {};
         const fontFamily = $(`select[name="${prefix}_font_family"]`).val();
         const fontWeight = $(`select[name="${prefix}_font_weight"]`).val();
@@ -218,77 +213,87 @@ jQuery(document).ready(function($) {
         const presetData = $(this).data('preset-data');
         const presetName = $(this).data('preset');
         
-        // Remplir le formulaire avec les données existantes
+        // Remplir le nom du preset
         $('#preset_name').val(presetName).attr('readonly', true);
         
         // Cocher les types de blocs
         $('input[name="block_types[]"]').prop('checked', false);
-        presetData.blockTypes.forEach(function(blockType) {
-            $(`input[name="block_types[]"][value="${blockType}"]`).prop('checked', true);
-        });
-        
-        // Mettre à jour les couleurs
-        if (presetData.styles && presetData.styles.color) {
-            // Sélectionner les options pour les couleurs principales
-            selectColorOption('background_color', presetData.styles.color.background);
-            selectColorOption('text_color', presetData.styles.color.text);
-            
-            // Sélectionner les options pour les éléments
-            if (presetData.styles.elements) {
-                if (presetData.styles.elements.button && presetData.styles.elements.button.color) {
-                    selectColorOption('button_background', presetData.styles.elements.button.color.background);
-                    selectColorOption('button_text', presetData.styles.elements.button.color.text);
+        if (presetData.blockTypes) {
+            presetData.blockTypes.forEach(function(blockType) {
+                $(`input[name="block_types[]"][value="${blockType}"]`).prop('checked', true);
+            });
+        }
+
+        // Fonction helper pour définir les valeurs de police
+        function setFontValues(element, styles) {
+            if (styles && styles.typography) {
+                if (styles.typography.fontFamily) {
+                    $(`select[name="${element}_font_family"]`).val(styles.typography.fontFamily);
                 }
-                if (presetData.styles.elements.link && presetData.styles.elements.link.color) {
-                    selectColorOption('link_text', presetData.styles.elements.link.color.text);
+                if (styles.typography.fontWeight) {
+                    $(`select[name="${element}_font_weight"]`).val(styles.typography.fontWeight);
                 }
-                if (presetData.styles.elements.heading && presetData.styles.elements.heading.color) {
-                    selectColorOption('heading_text', presetData.styles.elements.heading.color.text);
+                if (styles.typography.fontStyle) {
+                    $(`select[name="${element}_font_style"]`).val(styles.typography.fontStyle);
                 }
             }
         }
         
-        // Changer le texte du bouton submit
-        $('#section-preset-form button[type="submit"]').text('Mettre à jour le preset');
+        // Remplir les styles globaux
+        if (presetData.styles) {
+            // Couleurs globales
+            if (presetData.styles.color) {
+                selectColorOption('background_color', presetData.styles.color.background);
+                selectColorOption('text_color', presetData.styles.color.text);
+            }
+            
+            // Typographie globale
+            setFontValues('text', presetData.styles);
+            
+            // Styles des éléments
+            if (presetData.styles.elements) {
+                // Styles des boutons
+                if (presetData.styles.elements.button) {
+                    if (presetData.styles.elements.button.color) {
+                        selectColorOption('button_background', presetData.styles.elements.button.color.background);
+                        selectColorOption('button_text', presetData.styles.elements.button.color.text);
+                    }
+                    setFontValues('button', presetData.styles.elements.button);
+                }
+                
+                // Styles des titres
+                if (presetData.styles.elements.heading) {
+                    if (presetData.styles.elements.heading.color) {
+                        selectColorOption('heading_text', presetData.styles.elements.heading.color.text);
+                    }
+                    setFontValues('heading', presetData.styles.elements.heading);
+                }
+            }
+        }
         
-        // Ajouter un champ caché pour indiquer que c'est une modification
-        $('input[name="is_edit"]').remove();
-        $('#section-preset-form').append('<input type="hidden" name="is_edit" value="1">');
+        // Ajouter le champ is_edit
+        $('<input>').attr({
+            type: 'hidden',
+            name: 'is_edit',
+            value: '1'
+        }).appendTo('#section-preset-form');
+        
+        // Changer le texte du bouton submit
+        $('#section-preset-form button[type="submit"]').text('Mettre à jour');
         
         // Scroll vers le formulaire
         $('html, body').animate({
             scrollTop: $('#section-preset-form').offset().top - 50
         }, 500);
         
-        // Mettre à jour l'aperçu
+        // Mettre à jour la prévisualisation
         updatePreview();
     });
 
-    // Fonction helper pour sélectionner la bonne option de couleur
+    // Fonction helper pour sélectionner une option de couleur
     function selectColorOption(selectName, value) {
-        const select = $(`select[name="${selectName}"]`);
-        const options = select.find('option');
-        let found = false;
-
-        // D'abord, essayer de trouver une correspondance exacte
-        options.each(function() {
-            if ($(this).val() === value) {
-                select.val(value);
-                found = true;
-                return false; // Sortir de la boucle
-            }
-        });
-
-        // Si pas trouvé, chercher par la valeur CSS var()
-        if (!found) {
-            const cssVarName = value.replace('var(--wp--preset--color--', '').replace(')', '');
-            options.each(function() {
-                const optionValue = $(this).val();
-                if (optionValue.includes(cssVarName)) {
-                    select.val(optionValue);
-                    return false;
-                }
-            });
+        if (value) {
+            $(`select[name="${selectName}"]`).val(value);
         }
     }
 

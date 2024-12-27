@@ -68,6 +68,16 @@ class BlockStylesManager {
                     }
                 }
                 
+                if (isset($theme_json['settings']['typography']['fontSizes'])) {
+                    foreach ($theme_json['settings']['typography']['fontSizes'] as $fontSize) {
+                        $custom_css .= sprintf(
+                            '--wp--preset--font-size--%s: %s;',
+                            $fontSize['slug'],
+                            $fontSize['size']
+                        );
+                    }
+                }
+                
                 if (isset($theme_json['settings']['spacing']['spacingSizes'])) {
                     foreach ($theme_json['settings']['spacing']['spacingSizes'] as $spacing) {
                         $custom_css .= sprintf(

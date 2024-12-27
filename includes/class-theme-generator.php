@@ -18,6 +18,9 @@ class ThemeGenerator {
 
         $operation_type = sanitize_text_field($_POST['operation_type']);
 
+        // Log des données reçues
+        error_log('Données reçues: ' . print_r($_POST, true));
+
         // Pour la mise à jour, récupérer les données du thème existant
         if ($operation_type === 'update') {
             $existing_theme = sanitize_text_field($_POST['existing_theme']);
@@ -230,12 +233,11 @@ class ThemeGenerator {
             }
         }
 
-
         // Ajouter les tailles de police
         if (!empty($theme_data['font_names'])) {
             foreach ($theme_data['font_names'] as $index => $name) {
                 $font_size = array(
-                    'slug' => sanitize_title($name),
+                    'slug' => $theme_data['font_slugs'][$index],
                     'name' => $name,
                     'size' => $theme_data['font_sizes'][$index]
                 );
@@ -256,12 +258,12 @@ class ThemeGenerator {
         if (!empty($theme_data['spacing_names'])) {
             foreach ($theme_data['spacing_names'] as $index => $name) {
                 $theme_json['settings']['spacing']['spacingSizes'][] = array(
-                    'slug' => sanitize_title($name),
+                    'slug' => $theme_data['spacing_slugs'][$index],
                     'name' => $name,
                     'size' => $theme_data['spacing_sizes'][$index]
                 );
             }
-        } 
+        }
 
         if (!file_put_contents($theme_dir . '/theme.json', json_encode($theme_json, JSON_PRETTY_PRINT))) {
             throw new \Exception('Impossible de créer le fichier theme.json');

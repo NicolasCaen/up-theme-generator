@@ -188,6 +188,7 @@ class ThemeData {
             foreach ($theme_data['font_names'] as $index => $name) {
                 $sanitized['font_names'][] = sanitize_text_field($name);
                 $sanitized['font_sizes'][] = sanitize_text_field($theme_data['font_sizes'][$index]);
+                $sanitized['font_slugs'][] = sanitize_title($theme_data['font_slugs'][$index]);
                 
                 if (!empty($theme_data['font_sizes_min'][$index])) {
                     $sanitized['font_sizes_min'][] = sanitize_text_field($theme_data['font_sizes_min'][$index]);
@@ -204,6 +205,7 @@ class ThemeData {
                 if (!empty($name) && !empty($theme_data['spacing_sizes'][$index])) {
                     $sanitized['spacing_names'][] = sanitize_text_field($name);
                     $sanitized['spacing_sizes'][] = sanitize_text_field($theme_data['spacing_sizes'][$index]);
+                    $sanitized['spacing_slugs'][] = sanitize_title($theme_data['spacing_slugs'][$index]);
                 }
             }
         }

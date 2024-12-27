@@ -6,18 +6,51 @@ const DEFAULT_COLORS = [
 ];
 
 const DEFAULT_FONT_SIZES = [
-    { name: 'Small', size: 'clamp(0.875rem, 1vw, 1rem)', min: '0.875rem', max: '1rem' },
-    { name: 'Medium', size: 'clamp(1rem, 2vw, 1.25rem)', min: '1rem', max: '1.25rem' },
-    { name: 'Large', size: 'clamp(1.25rem, 3vw, 1.5rem)', min: '1.25rem', max: '1.5rem' }
+    { fluid: false, name: 's|14', size: '0.875rem', slug: 's' },
+    { fluid: false, name: 'm|16', size: '1rem', slug: 'm' },
+    { fluid: { max: '1.5rem', min: '1.5rem' }, name: 'l|20', size: '1.25rem', slug: 'l' },
+    { fluid: true, name: 'xl|62', size: 'clamp(1rem, 3.23vw, 62px)', slug: 'xl' },
+    { fluid: true, name: 'xxl|250', size: 'clamp(2rem, 13.02vw, 250px)', slug: 'xxl' },
+    { name: 'h1|62', size: '3.875rem', slug: 'h-one' },
+    { name: 'h2|52', size: '3.25rem', slug: 'h-two' },
+    { name: 'h3|44', size: '2.75rem', slug: 'h-three' },
+    { name: 'h4|36', size: '2.25rem', slug: 'h-four' },
+    { name: 'h5|26', size: '1.625rem', slug: 'h-five' }
 ];
 
 const DEFAULT_SPACING_SIZES = [
-    { name: 'Small', size: '0.5rem' },
-    { name: 'Medium', size: '1rem' },
-    { name: 'Large', size: '2rem' }
+    { name: '.5rem|8', size: '.5rem', slug: '1' },
+    { name: '1rem|16', size: '1rem', slug: '2' },
+    { name: '1.5rem|24', size: '1.5rem', slug: '3' },
+    { name: '2rem|32', size: '2rem', slug: '4' },
+    { name: '2.5rem|40', size: '2.5rem', slug: '5' },
+    { name: '3rem|48', size: '3rem', slug: '6' },
+    { name: '4.5rem|72', size: '4.5rem', slug: '7' },
+    { name: '7.5rem|120', size: '7.5rem', slug: '8' },
+    { name: '10rem|160', size: '10rem', slug: '9' },
+    { name: '12.5rem|200', size: '12.5rem', slug: '10' },
+    { name: 'header height', size: 'var(--header-height)', slug: 'headerheight' }
 ];
 
 jQuery(document).ready(function($) {
+    // Fonction pour initialiser les slugs par défaut
+    function initializeDefaultSlugs() {
+        // Initialiser les slugs pour les tailles de police
+        DEFAULT_FONT_SIZES.forEach((fontSize, index) => {
+            const $fontSizeItem = $('#font-sizes .font-size-item').eq(index);
+            $fontSizeItem.find('input[name="font_slugs[]"]').val(fontSize.slug);
+        });
+
+        // Initialiser les slugs pour les tailles d'espacement
+        DEFAULT_SPACING_SIZES.forEach((spacingSize, index) => {
+            const $spacingSizeItem = $('#spacing-sizes .spacing-size-item').eq(index);
+            $spacingSizeItem.find('input[name="spacing_slugs[]"]').val(spacingSize.slug);
+        });
+    }
+
+    // Appeler la fonction d'initialisation au chargement de la page
+    initializeDefaultSlugs();
+
     // Fonction pour ajouter un élément de couleur
     function addColorItem(name = '', slug = '', value = '') {
         const template = `
@@ -32,7 +65,7 @@ jQuery(document).ready(function($) {
     }
 
     // Fonction pour ajouter un élément de taille de police
-    function addFontSizeItem(name = '', size = '', min = '', max = '') {
+    function addFontSizeItem(name = '', size = '', min = '', max = '', slug = '') {
         const template = `
             <div class="font-size-item">
                 <div class="font-size-name">
@@ -51,6 +84,10 @@ jQuery(document).ready(function($) {
                         <label>Max</label>
                         <input type="text" name="font_sizes_max[]" value="${max}" placeholder="ex: 1.5rem">
                     </div>
+                    <div class="font-size-slug">
+                        <label>Slug</label>
+                        <input type="text" name="font_slugs[]" value="${slug}" placeholder="Slug">
+                    </div>
                 </div>
                 <button type="button" class="remove-font">Supprimer</button>
             </div>
@@ -59,7 +96,7 @@ jQuery(document).ready(function($) {
     }
 
     // Fonction pour ajouter un élément de taille d'espacement
-    function addSpacingSizeItem(name = '', size = '') {
+    function addSpacingSizeItem(name = '', size = '', slug = '') {
         const template = `
             <div class="spacing-size-item">
                 <div class="spacing-size-name">
@@ -69,6 +106,10 @@ jQuery(document).ready(function($) {
                     <div class="spacing-size-value">
                         <label>Taille</label>
                         <input type="text" name="spacing_sizes[]" value="${size}" placeholder="ex: 1rem">
+                    </div>
+                    <div class="spacing-size-slug">
+                        <label>Slug</label>
+                        <input type="text" name="spacing_slugs[]" value="${slug}" placeholder="Slug">
                     </div>
                 </div>
                 <button type="button" class="remove-spacing">Supprimer</button>
@@ -92,7 +133,7 @@ jQuery(document).ready(function($) {
     $('#load-default-font-sizes').on('click', function() {
         $('#font-sizes').empty();
         DEFAULT_FONT_SIZES.forEach(fontSize => {
-            addFontSizeItem(fontSize.name, fontSize.size, fontSize.min, fontSize.max);
+            addFontSizeItem(fontSize.name, fontSize.size, fontSize.min, fontSize.max, fontSize.slug);
         });
     });
 
@@ -100,7 +141,7 @@ jQuery(document).ready(function($) {
     $('#load-default-spacing-sizes').on('click', function() {
         $('#spacing-sizes').empty();
         DEFAULT_SPACING_SIZES.forEach(spacingSize => {
-            addSpacingSizeItem(spacingSize.name, spacingSize.size);
+            addSpacingSizeItem(spacingSize.name, spacingSize.size, spacingSize.slug);
         });
     });
 
@@ -144,6 +185,36 @@ jQuery(document).ready(function($) {
             formData.append('existing_theme', $('#existing_theme').val());
         }
 
+        // Inclure les slugs de police et d'espacement
+        $('#font-sizes .font-size-item').each(function() {
+            const fontSlug = $(this).find('input[name="font_slugs[]"]').val();
+            console.log('Font Slug:', fontSlug); // Log pour vérifier les slugs
+            formData.append('font_slugs[]', fontSlug);
+        });
+
+        $('#spacing-sizes .spacing-size-item').each(function() {
+            const spacingSlug = $(this).find('input[name="spacing_slugs[]"]').val();
+            console.log('Spacing Slug:', spacingSlug); // Log pour vérifier les slugs
+            formData.append('spacing_slugs[]', spacingSlug);
+        });
+
+        // Convertir FormData en un objet lisible
+        const dataObject = {};
+        formData.forEach((value, key) => {
+            if (!dataObject[key]) {
+                dataObject[key] = value;
+            } else {
+                if (!Array.isArray(dataObject[key])) {
+                    dataObject[key] = [dataObject[key]];
+                }
+                dataObject[key].push(value);
+            }
+        });
+
+        // Afficher les données dans une alerte
+        alert('Données envoyées :\n' + JSON.stringify(dataObject, null, 2));
+
+        // Envoyer la requête AJAX
         $.ajax({
             url: upThemeGenerator.ajaxurl,
             type: 'POST',
@@ -153,12 +224,12 @@ jQuery(document).ready(function($) {
             dataType: 'json',
             success: function(response) {
                 if (response && response.success) {
-                    alert(response.data.message || 'Thème mis à jour avec succès');
+                    alert(response.data.message || 'Thème généré avec succès');
                     window.location.href = 'themes.php';
                 } else {
                     const errorMessage = response && response.data 
                         ? response.data 
-                        : 'Une erreur est survenue lors de la mise à jour du thème.';
+                        : 'Une erreur est survenue lors de la génération du thème.';
                     alert(errorMessage);
                 }
             },
@@ -244,6 +315,10 @@ jQuery(document).ready(function($) {
                     <div class="font-size-fluid">
                         <label>Max</label>
                         <input type="text" name="font_sizes_max[]" placeholder="ex: 1.5rem">
+                    </div>
+                    <div class="font-size-slug">
+                        <label>Slug</label>
+                        <input type="text" name="font_slugs[]" placeholder="Slug">
                     </div>
                 </div>
                 <button type="button" class="remove-font">Supprimer</button>
@@ -355,6 +430,10 @@ jQuery(document).ready(function($) {
                                 <label>Max</label>
                                 <input type="text" name="font_sizes_max[]" value="${fontSize.fluid ? fontSize.fluid.max : ''}" placeholder="ex: 1.5rem">
                             </div>
+                            <div class="font-size-slug">
+                                <label>Slug</label>
+                                <input type="text" name="font_slugs[]" value="${fontSize.slug}" placeholder="Slug">
+                            </div>
                         </div>
                         <button type="button" class="remove-font">Supprimer</button>
                     </div>
@@ -385,17 +464,21 @@ jQuery(document).ready(function($) {
         // Tailles d'espacement
         $('#spacing-sizes').empty();
         if (themeData.spacing && themeData.spacing.spacingSizes && themeData.spacing.spacingSizes.length > 0) {
-            themeData.spacing.spacingSizes.forEach(spacing => {
-                console.log('Ajout de la taille d\'espacement:', spacing);
+            themeData.spacing.spacingSizes.forEach(spacingSize => {
+                console.log('Ajout de la taille d\'espacement:', spacingSize);
                 const template = `
                     <div class="spacing-size-item">
                         <div class="spacing-size-name">
-                            <input type="text" name="spacing_names[]" value="${spacing.name}" placeholder="Nom (ex: small)">
+                            <input type="text" name="spacing_names[]" value="${spacingSize.name}" placeholder="Nom (ex: small)">
                         </div>
                         <div class="spacing-size-values">
                             <div class="spacing-size-value">
                                 <label>Taille</label>
-                                <input type="text" name="spacing_sizes[]" value="${spacing.size}" placeholder="ex: 1rem">
+                                <input type="text" name="spacing_sizes[]" value="${spacingSize.size}" placeholder="ex: 1rem">
+                            </div>
+                            <div class="spacing-size-slug">
+                                <label>Slug</label>
+                                <input type="text" name="spacing_slugs[]" value="${spacingSize.slug}" placeholder="Slug">
                             </div>
                         </div>
                         <button type="button" class="remove-spacing">Supprimer</button>
@@ -470,6 +553,10 @@ jQuery(document).ready(function($) {
                         <label>Taille</label>
                         <input type="text" name="spacing_sizes[]" placeholder="ex: 1rem">
                     </div>
+                    <div class="spacing-size-slug">
+                        <label>Slug</label>
+                        <input type="text" name="spacing_slugs[]" placeholder="Slug">
+                    </div>
                 </div>
                 <button type="button" class="remove-spacing">Supprimer</button>
             </div>
@@ -485,10 +572,14 @@ jQuery(document).ready(function($) {
     // Auto-génération du slug d'espacement
     $(document).on('input', 'input[name="spacing_names[]"]', function() {
         const $item = $(this).closest('.spacing-size-item');
-        const value = $(this).val()
-            .toLowerCase()
-            .replace(/[^a-z0-9]/g, '-')
-            .replace(/-+/g, '-')
-            .replace(/^-|-$/g, '');
+        const $slugInput = $item.find('input[name="spacing_slugs[]"]');
+        if (!$slugInput.val()) {
+            const slug = $(this).val()
+                .toLowerCase()
+                .replace(/[^a-z0-9]/g, '-')
+                .replace(/-+/g, '-')
+                .replace(/^-|-$/g, '');
+            $slugInput.val(slug);
+        }
     });
 });

@@ -13,6 +13,7 @@ class BlockStylesManager {
         add_action('admin_enqueue_scripts', array($this, 'enqueue_scripts'));
         add_action('wp_ajax_save_block_style', array($this, 'ajax_save_block_style'));
         add_action('wp_ajax_delete_block_style', array($this, 'ajax_delete_block_style'));
+        add_action('wp_ajax_get_block_example', array($this, 'ajax_get_block_example'));
     }
 
     public function add_menu_page() {
@@ -375,5 +376,38 @@ class BlockStylesManager {
                 : array();
         }
         return array();
+    }
+
+    public function ajax_get_block_example() {
+        check_ajax_referer('up_theme_generator_nonce', 'nonce');
+        
+        if (!current_user_can('manage_options')) {
+            wp_send_json_error('Permission refusée');
+        }
+
+        $block_name = isset($_POST['block_name']) ? sanitize_text_field($_POST['block_name']) : '';
+        
+        if (empty($block_name)) {
+            wp_send_json_error('Nom du bloc manquant');
+        }
+
+        $registry = \WP_Block_Type_Registry::get_instance();
+        $block_type = $registry->get_registered($block_name);
+
+        if (!$block_type) {
+            wp_send_json_error('Bloc non trouvé');
+        }
+
+        // Utiliser l'exemple par défaut du bloc ou en créer un basique
+        $example = isset($block_type->example) ? $block_type->example : array(
+            'attributes' => array(),
+            'innerContent' => array('Exemple de contenu pour ' . $block_type->title)
+        );
+
+        // Créer le bloc avec son exemple
+        $block_content = new \WP_Block($block_type, $example['attributes'], array());
+        $rendered_content = $block_content->render();
+
+        wp_send_json_success($rendered_content);
     }
 }

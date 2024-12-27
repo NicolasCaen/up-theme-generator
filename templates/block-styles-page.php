@@ -184,9 +184,40 @@
                 <div class="preview-area">
                     <h2>Prévisualisation</h2>
                     <div id="block-preview-container">
-                        <div class="preview-placeholder">
-                            Sélectionnez un bloc pour voir la prévisualisation
-                        </div>
+                        <?php
+                        if (!empty($_GET['block'])) {
+                            $block_name = sanitize_text_field($_GET['block']);
+                            $registry = \WP_Block_Type_Registry::get_instance();
+                            $block_type = $registry->get_registered($block_name);
+                            
+                            if ($block_type) {
+                                // Créer un bloc simple avec le nom du bloc
+                                $block_content = '<!-- wp:' . $block_name . ' -->';
+                                
+                                // Ajouter le contenu par défaut selon le type de bloc
+                                switch($block_name) {
+                                    case 'core/paragraph':
+                                        $block_content .= '<p>Ceci est un exemple de paragraphe.</p>';
+                                        break;
+                                    case 'core/heading':
+                                        $block_content .= '<h2>Exemple de titre</h2>';
+                                        break;
+                                    case 'core/button':
+                                        $block_content .= '<div class="wp-block-button"><a class="wp-block-button__link">Cliquez ici</a></div>';
+                                        break;
+                                    default:
+                                        $block_content .= '<div>Exemple de contenu pour ' . $block_type->title . '</div>';
+                                }
+                                
+                                $block_content .= '<!-- /wp:' . $block_name . ' -->';
+                                
+                                // Rendre le bloc
+                                echo do_blocks($block_content);
+                            }
+                        } else {
+                            echo '<div class="preview-placeholder">Sélectionnez un bloc pour voir la prévisualisation</div>';
+                        }
+                        ?>
                     </div>
                 </div>
             </div>

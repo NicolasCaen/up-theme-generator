@@ -1,55 +1,57 @@
-const DEFAULT_COLORS = [
-    { name: 'Primary', slug: 'primary', value: '#0073aa' },
-    { name: 'Secondary', slug: 'secondary', value: '#005177' },
-    { name: 'Background', slug: 'background', value: '#ffffff' },
-    { name: 'Text', slug: 'text', value: '#333333' }
-];
+// Variables pour stocker les valeurs par défaut
+let DEFAULT_COLORS = [];
+let DEFAULT_FONT_SIZES = [];
+let DEFAULT_SPACING_SIZES = [];
 
-const DEFAULT_FONT_SIZES = [
-    { fluid: false, name: 's|14', size: '0.875rem', slug: 's' },
-    { fluid: false, name: 'm|16', size: '1rem', slug: 'm' },
-    { fluid: { max: '1.5rem', min: '1.5rem' }, name: 'l|20', size: '1.25rem', slug: 'l' },
-    { fluid: true, name: 'xl|62', size: 'clamp(1rem, 3.23vw, 62px)', slug: 'xl' },
-    { fluid: true, name: 'xxl|250', size: 'clamp(2rem, 13.02vw, 250px)', slug: 'xxl' },
-    { name: 'h1|62', size: '3.875rem', slug: 'h-one' },
-    { name: 'h2|52', size: '3.25rem', slug: 'h-two' },
-    { name: 'h3|44', size: '2.75rem', slug: 'h-three' },
-    { name: 'h4|36', size: '2.25rem', slug: 'h-four' },
-    { name: 'h5|26', size: '1.625rem', slug: 'h-five' }
-];
+// Fonction pour charger les valeurs par défaut
+async function loadDefaultValues() {
+    try {
+        // Charger les couleurs
+        const colorsResponse = await fetch(upThemeGenerator.pluginUrl + 'resources/default-theme-values/colors.json');
+        const colorsData = await colorsResponse.json();
+        DEFAULT_COLORS = colorsData.colors;
 
-const DEFAULT_SPACING_SIZES = [
-    { name: '.5rem|8', size: '.5rem', slug: '1' },
-    { name: '1rem|16', size: '1rem', slug: '2' },
-    { name: '1.5rem|24', size: '1.5rem', slug: '3' },
-    { name: '2rem|32', size: '2rem', slug: '4' },
-    { name: '2.5rem|40', size: '2.5rem', slug: '5' },
-    { name: '3rem|48', size: '3rem', slug: '6' },
-    { name: '4.5rem|72', size: '4.5rem', slug: '7' },
-    { name: '7.5rem|120', size: '7.5rem', slug: '8' },
-    { name: '10rem|160', size: '10rem', slug: '9' },
-    { name: '12.5rem|200', size: '12.5rem', slug: '10' },
-    { name: 'header height', size: 'var(--header-height)', slug: 'headerheight' }
-];
+        // Charger les tailles de police
+        const fontSizesResponse = await fetch(upThemeGenerator.pluginUrl + 'resources/default-theme-values/font-sizes.json');
+        const fontSizesData = await fontSizesResponse.json();
+        DEFAULT_FONT_SIZES = fontSizesData.fontSizes;
+
+        // Charger les tailles d'espacement
+        const spacingSizesResponse = await fetch(upThemeGenerator.pluginUrl + 'resources/default-theme-values/spacing-sizes.json');
+        const spacingSizesData = await spacingSizesResponse.json();
+        DEFAULT_SPACING_SIZES = spacingSizesData.spacingSizes;
+
+        // Initialiser les valeurs par défaut une fois chargées
+        initializeDefaultValues();
+    } catch (error) {
+        console.error('Erreur lors du chargement des valeurs par défaut:', error);
+    }
+}
+
+// Fonction pour initialiser les valeurs par défaut
+function initializeDefaultValues() {
+    initializeDefaultSlugs();
+    // Autres initialisations si nécessaire
+}
+
+// Fonction pour initialiser les slugs par défaut
+function initializeDefaultSlugs() {
+    // Initialiser les slugs pour les tailles de police
+    DEFAULT_FONT_SIZES.forEach((fontSize, index) => {
+        const $fontSizeItem = $('#font-sizes .font-size-item').eq(index);
+        $fontSizeItem.find('input[name="font_slugs[]"]').val(fontSize.slug);
+    });
+
+    // Initialiser les slugs pour les tailles d'espacement
+    DEFAULT_SPACING_SIZES.forEach((spacingSize, index) => {
+        const $spacingSizeItem = $('#spacing-sizes .spacing-size-item').eq(index);
+        $spacingSizeItem.find('input[name="spacing_slugs[]"]').val(spacingSize.slug);
+    });
+}
 
 jQuery(document).ready(function($) {
-    // Fonction pour initialiser les slugs par défaut
-    function initializeDefaultSlugs() {
-        // Initialiser les slugs pour les tailles de police
-        DEFAULT_FONT_SIZES.forEach((fontSize, index) => {
-            const $fontSizeItem = $('#font-sizes .font-size-item').eq(index);
-            $fontSizeItem.find('input[name="font_slugs[]"]').val(fontSize.slug);
-        });
-
-        // Initialiser les slugs pour les tailles d'espacement
-        DEFAULT_SPACING_SIZES.forEach((spacingSize, index) => {
-            const $spacingSizeItem = $('#spacing-sizes .spacing-size-item').eq(index);
-            $spacingSizeItem.find('input[name="spacing_slugs[]"]').val(spacingSize.slug);
-        });
-    }
-
-    // Appeler la fonction d'initialisation au chargement de la page
-    initializeDefaultSlugs();
+    // Charger les valeurs par défaut au démarrage
+    loadDefaultValues();
 
     // Fonction pour ajouter un élément de couleur
     function addColorItem(name = '', slug = '', value = '') {

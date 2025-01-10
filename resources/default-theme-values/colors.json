@@ -1,0 +1,8 @@
+{
+    "colors": [
+        { "name": "Primary", "slug": "primary", "value": "#0073aa" },
+        { "name": "Secondary", "slug": "secondary", "value": "#005177" },
+        { "name": "Background", "slug": "background", "value": "#ffffff" },
+        { "name": "Text", "slug": "text", "value": "#333333" }
+    ]
+}

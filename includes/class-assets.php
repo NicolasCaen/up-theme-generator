@@ -28,7 +28,8 @@ class Assets {
 
         wp_localize_script('up-theme-generator-script', 'upThemeGenerator', array(
             'ajaxurl' => admin_url('admin-ajax.php'),
-            'nonce' => wp_create_nonce('up_theme_generator_nonce')
+            'nonce' => wp_create_nonce('up_theme_generator_nonce'),
+            'pluginUrl' => UP_THEME_GENERATOR_URL
         ));
     }
 }

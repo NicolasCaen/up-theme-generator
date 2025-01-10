@@ -1,0 +1,14 @@
+{
+    "fontSizes": [
+        { "fluid": false, "name": "s|14", "size": "0.875rem", "slug": "s" },
+        { "fluid": false, "name": "m|16", "size": "1rem", "slug": "m" },
+        { "fluid": { "max": "1.5rem", "min": "1.5rem" }, "name": "l|20", "size": "1.25rem", "slug": "l" },
+        { "fluid": true, "name": "xl|62", "size": "clamp(1rem, 3.23vw, 62px)", "slug": "xl" },
+        { "fluid": true, "name": "xxl|250", "size": "clamp(2rem, 13.02vw, 250px)", "slug": "xxl" },
+        { "name": "h1|62", "size": "3.875rem", "slug": "h-one" },
+        { "name": "h2|52", "size": "3.25rem", "slug": "h-two" },
+        { "name": "h3|44", "size": "2.75rem", "slug": "h-three" },
+        { "name": "h4|36", "size": "2.25rem", "slug": "h-four" },
+        { "name": "h5|26", "size": "1.625rem", "slug": "h-five" }
+    ]
+}

@@ -1,0 +1,7 @@
+<!-- wp:group {"tagName":"div","className":"site-footer"} -->
+<div class="wp-block-group site-footer">
+    <!-- wp:paragraph {"align":"center"} -->
+    <p class="has-text-align-center">© 2024 - Tous droits réservés</p>
+    <!-- /wp:paragraph -->
+</div>
+<!-- /wp:group -->

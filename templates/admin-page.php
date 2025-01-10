@@ -1,8 +1,11 @@
 <?php 
-
+// Prevent direct access to this file
 if (!defined('ABSPATH')) {
     exit;
 }
+
+// Initialiser le ThemeGenerator avec le namespace complet
+$theme_generator = new \UPThemeGenerator\ThemeGenerator();
 ?>
 <div class="wrap">
     <h1>Générateur de Thème FSE</h1>
@@ -103,7 +106,6 @@ if (!defined('ABSPATH')) {
             </table>
         </div>
 
-
         <div class="form-section">
             <h2>Configuration theme.json</h2>
             <table class="form-table">
@@ -183,54 +185,52 @@ if (!defined('ABSPATH')) {
 
         <div class="form-section">
             <h2>Templates</h2>
-            <table class="form-table">
-                <tr>
-                    <th>Templates à inclure</th>
-                    <td>
-                        <label>
-                            <input type="checkbox" name="templates[]" value="index"> Index
-                        </label><br>
-                        <label>
-                            <input type="checkbox" name="templates[]" value="single"> Single
-                        </label><br>
-                        <label>
-                            <input type="checkbox" name="templates[]" value="archive"> Archive
-                        </label><br>
-                        <label>
-                            <input type="checkbox" name="templates[]" value="page"> Page
-                        </label>
-                    </td>
-                </tr>
-                <tr>
-                    <th>Template Parts</th>
-                    <td>
-                        <label>
-                            <input type="checkbox" name="parts[]" value="header"> Header
-                        </label><br>
-                        <label>
-                            <input type="checkbox" name="parts[]" value="footer"> Footer
-                        </label>
-                    </td>
-                </tr>
-            </table>
+            <div class="template-options">
+                <?php
+                $available_templates = $theme_generator->get_available_files('templates');
+                foreach ($available_templates as $template) :
+                    $template_id = sanitize_title($template);
+                ?>
+                    <label>
+                        <input type="checkbox" name="templates[]" value="<?php echo esc_attr($template); ?>" <?php echo ($template === 'index') ? 'checked disabled' : ''; ?>>
+                        <?php echo esc_html($template); ?>
+                    </label><br>
+                <?php endforeach; ?>
+            </div>
         </div>
-<?php /*
+
         <div class="form-section">
-            <h2>Typographie</h2>
-            <table class="form-table">
-                <tr>
-                    <th>Preset de typographie</th>
-                    <td>
-                        <select name="typography_preset" id="typography_preset">
-                            <option value="default">Preset par défaut (Arial/Sans-serif)</option>
-                            <!-- Les autres options seront chargées dynamiquement -->
-                        </select>
-                        <p class="description">Sélectionnez un preset de typographie existant ou utilisez le preset par défaut</p>
-                    </td>
-                </tr>
-            </table>
+            <h2>Template Parts</h2>
+            <div class="parts-options">
+                <?php
+                $available_parts = $theme_generator->get_available_files('parts');
+                foreach ($available_parts as $part) :
+                    $part_id = sanitize_title($part);
+                ?>
+                    <label>
+                        <input type="checkbox" name="parts[]" value="<?php echo esc_attr($part); ?>" checked>
+                        <?php echo esc_html($part); ?>
+                    </label><br>
+                <?php endforeach; ?>
+            </div>
         </div>
-*/ ?>
+
+        <div class="form-section">
+            <h2>Patterns</h2>
+            <div class="patterns-options">
+                <?php
+                $available_patterns = $theme_generator->get_available_files('patterns');
+                foreach ($available_patterns as $pattern) :
+                    $pattern_id = sanitize_title($pattern);
+                ?>
+                    <label>
+                        <input type="checkbox" name="patterns[]" value="<?php echo esc_attr($pattern); ?>">
+                        <?php echo esc_html($pattern); ?>
+                    </label><br>
+                <?php endforeach; ?>
+            </div>
+        </div>
+
         <div class="form-field">
             <label>
                 <input type="checkbox" id="create_backup" name="create_backup" checked>

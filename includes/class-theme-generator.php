@@ -75,6 +75,7 @@ class ThemeGenerator {
             $this->generate_theme_json($theme_dir, $theme_data);
             $this->generate_templates($theme_dir, $theme_data);
             $this->generate_parts($theme_dir, $theme_data);
+            $this->generate_patterns($theme_dir, $theme_data);
             
             // Gérer le screenshot - déplacé ici avant le return
             if (isset($_FILES['theme_screenshot']) && !empty($_FILES['theme_screenshot']['tmp_name'])) {
@@ -123,6 +124,7 @@ class ThemeGenerator {
             $this->generate_theme_json($theme_dir, $theme_data);
             $this->generate_templates($theme_dir, $theme_data);
             $this->generate_parts($theme_dir, $theme_data);
+            $this->generate_patterns($theme_dir, $theme_data);
 
             // Gérer le screenshot - ajouté ici
             if (isset($_FILES['theme_screenshot']) && !empty($_FILES['theme_screenshot']['tmp_name'])) {
@@ -282,132 +284,93 @@ class ThemeGenerator {
 
         foreach ($theme_data['templates'] as $template) {
             $template_content = $this->get_template_content($template);
-            $template_file = $templates_dir . '/' . $template . '.html';
-
-            if (!file_put_contents($template_file, $template_content)) {
-                throw new \Exception("Impossible de créer le template {$template}");
+            if (!empty($template_content)) {
+                $template_file = $templates_dir . '/' . $template . '.html';
+                if (!file_put_contents($template_file, $template_content)) {
+                    throw new \Exception("Impossible de créer le template {$template}");
+                }
             }
         }
     }
 
     private function generate_parts($theme_dir, $theme_data) {
-        if (empty($theme_data['parts'])) {
-            return;
-        }
-
         $parts_dir = $theme_dir . '/parts';
         if (!is_dir($parts_dir) && !mkdir($parts_dir, 0755, true)) {
             throw new \Exception('Impossible de créer le dossier parts');
         }
 
-        foreach ($theme_data['parts'] as $part) {
+        // Liste des parts par défaut
+        $default_parts = $this->get_available_files('parts');
+        foreach ($default_parts as $part) {
             $part_content = $this->get_part_content($part);
-            $part_file = $parts_dir . '/' . $part . '.html';
-
-            if (!file_put_contents($part_file, $part_content)) {
-                throw new \Exception("Impossible de créer le template part {$part}");
+            if (!empty($part_content)) {
+                $part_file = $parts_dir . '/' . $part . '.html';
+                if (!file_put_contents($part_file, $part_content)) {
+                    throw new \Exception("Impossible de créer le template part {$part}");
+                }
             }
         }
     }
 
+    private function generate_patterns($theme_dir, $theme_data) {
+        $patterns_dir = $theme_dir . '/patterns';
+        if (!is_dir($patterns_dir) && !mkdir($patterns_dir, 0755, true)) {
+            throw new \Exception('Impossible de créer le dossier patterns');
+        }
+
+        $patterns = $this->get_available_files('patterns');
+        foreach ($patterns as $pattern) {
+            $pattern_content = $this->get_pattern_content($pattern);
+            if (!empty($pattern_content)) {
+                $pattern_file = $patterns_dir . '/' . $pattern . '.html';
+                if (!file_put_contents($pattern_file, $pattern_content)) {
+                    throw new \Exception("Impossible de créer le pattern {$pattern}");
+                }
+            }
+        }
+    }
+
+    public function get_available_files($type) {
+        $dir = UP_THEME_GENERATOR_PATH . 'resources/default-theme-tmpl/' . $type;
+        $files = glob($dir . '/*.html.dist');
+        $available = array();
+        
+        foreach ($files as $file) {
+            $name = basename($file, '.html.dist');
+            $available[] = $name;
+        }
+        
+        return $available;
+    }
+
     private function get_template_content($template) {
-        $templates = array(
-            'index' => '<!-- wp:template-part {"slug":"header","tagName":"header"} /-->
-
-<!-- wp:group {"tagName":"main"} -->
-<main class="wp-block-group">
-    <!-- wp:query -->
-    <div class="wp-block-query">
-        <!-- wp:post-template -->
-            <!-- wp:post-title {"isLink":true} /-->
-            <!-- wp:post-excerpt /-->
-        <!-- /wp:post-template -->
-
-        <!-- wp:query-pagination -->
-            <!-- wp:query-pagination-previous /-->
-            <!-- wp:query-pagination-numbers /-->
-            <!-- wp:query-pagination-next /-->
-        <!-- /wp:query-pagination -->
-    </div>
-    <!-- /wp:query -->
-</main>
-<!-- /wp:group -->
-
-<!-- wp:template-part {"slug":"footer","tagName":"footer"} /-->',
-
-            'single' => '<!-- wp:template-part {"slug":"header","tagName":"header"} /-->
-
-<!-- wp:group {"tagName":"main"} -->
-<main class="wp-block-group">
-    <!-- wp:post-title /-->
-    <!-- wp:post-content /-->
-</main>
-<!-- /wp:group -->
-
-<!-- wp:template-part {"slug":"footer","tagName":"footer"} /-->',
-
-            'page' => '<!-- wp:template-part {"slug":"header","tagName":"header"} /-->
-
-<!-- wp:group {"tagName":"main"} -->
-<main class="wp-block-group">
-    <!-- wp:post-title /-->
-    <!-- wp:post-content /-->
-</main>
-<!-- /wp:group -->
-
-<!-- wp:template-part {"slug":"footer","tagName":"footer"} /-->',
-
-            'archive' => '<!-- wp:template-part {"slug":"header","tagName":"header"} /-->
-
-<!-- wp:group {"tagName":"main"} -->
-<main class="wp-block-group">
-    <!-- wp:query-title {"type":"archive"} /-->
-
-    <!-- wp:query -->
-    <div class="wp-block-query">
-        <!-- wp:post-template -->
-            <!-- wp:post-title {"isLink":true} /-->
-            <!-- wp:post-excerpt /-->
-        <!-- /wp:post-template -->
-
-        <!-- wp:query-pagination -->
-            <!-- wp:query-pagination-previous /-->
-            <!-- wp:query-pagination-numbers /-->
-            <!-- wp:query-pagination-next /-->
-        <!-- /wp:query-pagination -->
-    </div>
-    <!-- /wp:query -->
-</main>
-<!-- /wp:group -->
-
-<!-- wp:template-part {"slug":"footer","tagName":"footer"} /-->'
-        );
-
-        return isset($templates[$template]) ? $templates[$template] : '';
+        $template_file = UP_THEME_GENERATOR_PATH . 'resources/default-theme-tmpl/templates/' . $template . '.html.dist';
+        
+        if (file_exists($template_file)) {
+            return file_get_contents($template_file);
+        }
+        
+        return '';
     }
 
     private function get_part_content($part) {
-        $parts = array(
-            'header' => '<!-- wp:group {"tagName":"div","className":"site-header"} -->
-<div class="wp-block-group site-header">
-    <!-- wp:site-title /-->
-    <!-- wp:site-tagline /-->
-    <!-- wp:navigation /-->
-</div>
-<!-- /wp:group -->',
+        $part_file = UP_THEME_GENERATOR_PATH . 'resources/default-theme-tmpl/parts/' . $part . '.html.dist';
+        
+        if (file_exists($part_file)) {
+            return file_get_contents($part_file);
+        }
+        
+        return '';
+    }
 
-            'footer' => '<!-- wp:group {"tagName":"div","className":"site-footer"} -->
-<div class="wp-block-group site-footer">
-    <!-- wp:paragraph {"align":"center"} -->
-    <p class="has-text-align-center">
-        Powered by WordPress
-    </p>
-    <!-- /wp:paragraph -->
-</div>
-<!-- /wp:group -->'
-        );
-
-        return isset($parts[$part]) ? $parts[$part] : '';
+    private function get_pattern_content($pattern) {
+        $pattern_file = UP_THEME_GENERATOR_PATH . 'resources/default-theme-tmpl/patterns/' . $pattern . '.html.dist';
+        
+        if (file_exists($pattern_file)) {
+            return file_get_contents($pattern_file);
+        }
+        
+        return '';
     }
 
     private function recursive_remove_directory($dir) {
@@ -493,7 +456,7 @@ class ThemeGenerator {
         $this->resize_screenshot($target_path);
     }
 
-        /**
+    /**
      * Redimensionne le screenshot aux dimensions recommandées par WordPress
      */
     private function resize_screenshot($path) {

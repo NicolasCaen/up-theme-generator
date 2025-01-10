@@ -1,8 +1,16 @@
 {
     "colors": [
-        { "name": "Primary", "slug": "primary", "value": "#0073aa" },
-        { "name": "Secondary", "slug": "secondary", "value": "#005177" },
-        { "name": "Background", "slug": "background", "value": "#ffffff" },
-        { "name": "Text", "slug": "text", "value": "#333333" }
+        { "name": "Base", "slug": "base", "value": "#ffffff" },
+        { "name": "Base 2", "slug": "base-2", "value": "#f5f5f5" },
+        { "name": "Base 3", "slug": "base-3", "value": "#ebebeb" },
+        { "name": "Base 4", "slug": "base-4", "value": "#e0e0e0" },
+        { "name": "Contrast", "slug": "contrast", "value": "#1a1a1a" },
+        { "name": "Contrast 2", "slug": "contrast-2", "value": "#333333" },
+        { "name": "Contrast 3", "slug": "contrast-3", "value": "#4d4d4d" },
+        { "name": "Contrast 4", "slug": "contrast-4", "value": "#666666" },
+        { "name": "Accent", "slug": "accent", "value": "#2c5282" },
+        { "name": "Accent 2", "slug": "accent-2", "value": "#3182ce" },
+        { "name": "Accent 3", "slug": "accent-3", "value": "#4299e1" },
+        { "name": "Accent 4", "slug": "accent-4", "value": "#63b3ed" }
     ]
 }

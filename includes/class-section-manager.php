@@ -14,7 +14,7 @@ class SectionManager {
         add_submenu_page(
             'up-theme-generator',
             'Gestionnaire de Sections',
-            'Sections',
+            'Styles | Sections',
             'manage_options',
             'up-theme-generator-sections',
             array($this, 'render_section_page')

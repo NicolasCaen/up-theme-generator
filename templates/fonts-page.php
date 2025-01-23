@@ -9,7 +9,12 @@ $nonce = wp_create_nonce('up_theme_generator_nonce');
 
 <div class="wrap">
     <h1>Gestionnaire de Polices</h1>
-    
+    <div class="up-theme-generator__info">
+        <h3>Permet d'ajouter des fichiers de polices à un Thème</h3>
+        <p>Selectionner un Thème et ajouter lui les fichiers de polices</p>
+        <p>Une fois les fichiers ajouter, ces polices seront  disponible pour créer des presets de polices</p>
+        <p>Ensuite, nous pouvons les inclure dans le thème.json du thème grâce à l'<a href="admin.php?page=up-theme-generator-typography">onglet Typographie</a></p>
+    </div>
     <div class="tablenav top">
         <div class="alignleft actions">
             <select id="theme-selector">
@@ -23,10 +28,6 @@ $nonce = wp_create_nonce('up_theme_generator_nonce');
                 <?php endforeach; ?>
             </select>
 
-            <!-- Ajout de la sélection de preset -->
-            <select id="preset-selector" disabled>
-                <option value="">Sélectionner un preset</option>
-            </select>
         </div>
     </div>
 

@@ -20,7 +20,7 @@ class BlockStylesManager {
         add_submenu_page(
             'up-theme-generator',
             'Styles de Blocs',
-            'Styles de Blocs',
+            'Styles | Blocks',
             'manage_options',
             'up-theme-generator-block-styles',
             array($this, 'display_block_styles_manager')

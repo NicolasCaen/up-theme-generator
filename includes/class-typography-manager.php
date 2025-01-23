@@ -13,7 +13,7 @@ class TypographyManager {
         add_submenu_page(
             'up-theme-generator',
             'Gestionnaire de Typographie',
-            'Typographie',
+            'Presets | Fonts',
             'manage_options',
             'up-theme-generator-typography',
             array($this, 'render_typography_page')
@@ -37,92 +37,17 @@ class TypographyManager {
             $this->handle_typography_preset($_POST['preset_file'], $selected_theme);
         }
         
-        echo '<div class="wrap">';
-        echo '<h1>Gestionnaire de Typographie</h1>';
-        
-        // Afficher le sélecteur de thème
-        echo '<form method="get" action="">';
-        echo '<input type="hidden" name="page" value="up-theme-generator-typography">';
-        echo '<select name="theme" onchange="this.form.submit()">';
-        echo '<option value="">Sélectionner un thème</option>';
-        foreach ($themes as $theme) {
-            $selected = ($theme->get_stylesheet() === $selected_theme) ? 'selected' : '';
-            echo '<option value="' . esc_attr($theme->get_stylesheet()) . '" ' . $selected . '>';
-            echo esc_html($theme->get('Name'));
-            echo '</option>';
-        }
-        echo '</select>';
-        echo '</form>';
+
         
         settings_errors('typography_presets');
         
         // Afficher les presets disponibles seulement si un thème est sélectionné
-        if (!empty($selected_theme)) {
-            $preset_dir = WP_CONTENT_DIR . '/themes/' . $selected_theme . '/styles/typography/';
-            $preset_files = glob($preset_dir . '*.json');
-            
-            echo '<h2>Presets de Typographie</h2>';
-            echo '<table class="wp-list-table widefat fixed striped">';
-            echo '<thead>';
-            echo '<tr>';
-            echo '<th>Nom du Preset</th>';
-            echo '<th>First Font</th>';
-            echo '<th>Second Font</th>';
-            echo '<th>Third Font</th>';
-            echo '<th>Action</th>';
-            echo '</tr>';
-            echo '</thead>';
-            echo '<tbody>';
-            
-            if (empty($preset_files)) {
-                echo '<tr><td colspan="5">Aucun preset de typographie trouvé pour ce thème.</td></tr>';
-            } else {
-                foreach ($preset_files as $file) {
-                    $preset_data = json_decode(file_get_contents($file), true);
-                    $preset_name = basename($file, '.json');
-                    
-                    echo '<tr>';
-                    echo '<td>' . esc_html($preset_data['title'] ?? $preset_name) . '</td>';
-                    
-                    // Afficher les détails des polices
-                    foreach (['first', 'second', 'third'] as $font_key) {
-                        echo '<td>';
-                        if (isset($preset_data['settings']['typography']['fontFamilies'])) {
-                            foreach ($preset_data['settings']['typography']['fontFamilies'] as $font) {
-                                if ($font['slug'] === $font_key) {
-                                    echo '<strong>Famille:</strong> ' . esc_html($font['fontFamily']) . '<br>';
-                                    echo '<strong>Nom:</strong> ' . esc_html($font['name']) . '<br>';
-                                    if (!empty($font['fontFace'])) {
-                                        echo '<strong>Variantes:</strong> ' . count($font['fontFace']);
-                                    }
-                                }
-                            }
-                        }
-                        echo '</td>';
-                    }
-                    
-                    // Bouton d'action
-                    echo '<td>';
-                    echo '<form method="post">';
-                    echo '<input type="hidden" name="preset_file" value="' . esc_attr($preset_name) . '">';
-                    wp_nonce_field('apply_typography_preset', 'typography_preset_nonce');
-                    echo '<input type="submit" name="apply_preset" class="button button-primary" value="Appliquer">';
-                    echo '</form>';
-                    echo '</td>';
-                    
-                    echo '</tr>';
-                }
-            }
-            
-            echo '</tbody>';
-            echo '</table>';
-        } else {
+      
+            include UP_THEME_GENERATOR_PATH . 'templates/typography-page.php';
+            if (empty($selected_theme)) {
             echo '<div class="notice notice-warning"><p>Veuillez sélectionner un thème pour voir les presets de typographie disponibles.</p></div>';
         }
-        
-        // Afficher le reste de la page
-        include UP_THEME_GENERATOR_PATH . 'templates/typography-page.php';
-        echo '</div>';
+
     }
 
     private function get_available_fonts($theme_slug) {

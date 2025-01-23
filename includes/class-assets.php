@@ -7,9 +7,9 @@ class Assets {
     }
 
     public function enqueue_admin_assets($hook) {
-        if ($hook !== 'toplevel_page_up-theme-generator') {
-            return;
-        }
+       // if ($hook !== 'toplevel_page_up-theme-generator') {
+       //     return;
+       // }
 
         wp_enqueue_style(
             'up-theme-generator-style',

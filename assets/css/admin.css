@@ -152,3 +152,14 @@
     padding: 4px 8px;
     border-radius: 3px;
 }
+.up-theme-generator__info {
+  margin:2rem 0;
+    padding: 10px;
+    background: #f9f9f9;
+    border: 1px solid #ddd;
+    border-radius: 4px; 
+
+}
+.up-theme-generator__info p{
+    font-size: .925rem;
+}

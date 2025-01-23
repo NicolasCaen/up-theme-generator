@@ -12,11 +12,11 @@ class AdminMenu {
     public function add_admin_menu() {
         add_menu_page(
             'Générateur de Thème FSE',
-            'Générateur Thème',
+            'Up Generator',
             'manage_options',
             'up-theme-generator',
             array($this->view, 'render_admin_page'),
-            'dashicons-admin-appearance',
+            'dashicons-art',
             30
         );
     }

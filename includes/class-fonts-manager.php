@@ -26,7 +26,7 @@ class FontsManager {
         add_submenu_page(
             'up-theme-generator',
             'Gestionnaire de Polices',
-            'Polices',
+            'Ajouter | Polices',
             'manage_options',
             'up-theme-generator-fonts',
             array($this, 'render_fonts_page')

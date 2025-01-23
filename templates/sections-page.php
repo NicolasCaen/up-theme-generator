@@ -45,7 +45,9 @@ if (!defined('ABSPATH')) {
                         </div>
 
                         <div class="color-settings">
-                            <h3>Couleurs</h3>
+                            <h3>Générals</h3>
+                        <div class="element-group">
+                            <h4>Couleurs</h4>
                             <p>
                                 <label>Couleur de fond:</label>
                                 <select name="background_color" class="color-select" data-default="var(--wp--preset--color--base-2)">
@@ -81,67 +83,9 @@ if (!defined('ABSPATH')) {
                                     </select>
                                 </p>
                                 <div class="font-additional-options">
-                                    <select name="text_font_weight" class="font-weight-select">
-                                        <option value="inherit">Graisse par défaut</option>
-                                        <option value="100">Thin (100)</option>
-                                        <option value="200">Extra Light (200)</option>
-                                        <option value="300">Light (300)</option>
-                                        <option value="400">Regular (400)</option>
-                                        <option value="500">Medium (500)</option>
-                                        <option value="600">Semi Bold (600)</option>
-                                        <option value="700">Bold (700)</option>
-                                        <option value="800">Extra Bold (800)</option>
-                                        <option value="900">Black (900)</option>
-                                    </select>
-                                    <select name="text_font_style" class="font-style-select">
-                                        <option value="inherit">Style par défaut</option>
-                                        <option value="normal">Normal</option>
-                                        <option value="italic">Italique</option>
-                                    </select>
-                                </div>
-                            </div>
-                        </div>
-
-                        <div class="element-styles">
-                            <h3>Styles des éléments</h3>
-                            <div class="element-group">
-                                <h4>Bouton</h4>
-                                <p>
-                                    <label>Couleur de fond:</label>
-                                    <select name="button_background" class="color-select" data-default="var(--wp--preset--color--contrast)">
-                                        <?php foreach ($theme_colors as $color): ?>
-                                            <option value="var(--wp--preset--color--<?php echo esc_attr($color['slug']); ?>)"
-                                                    data-color="<?php echo esc_attr($color['color']); ?>">
-                                                <?php echo esc_html($color['name']); ?>
-                                            </option>
-                                        <?php endforeach; ?>
-                                    </select>
-                                </p>
-                                <p>
-                                    <label>Couleur du texte:</label>
-                                    <select name="button_text" class="color-select" data-default="var(--wp--preset--color--base-2)">
-                                        <?php foreach ($theme_colors as $color): ?>
-                                            <option value="var(--wp--preset--color--<?php echo esc_attr($color['slug']); ?>)"
-                                                    data-color="<?php echo esc_attr($color['color']); ?>">
-                                                <?php echo esc_html($color['name']); ?>
-                                            </option>
-                                        <?php endforeach; ?>
-                                    </select>
-                                </p>
-                                <div class="font-settings">
-                                    <p>
-                                        <label>Police du bouton:</label>
-                                        <select name="button_font_family" class="font-select" data-default="inherit">
-                                            <option value="inherit">Police par défaut</option>
-                                            <?php foreach ($theme_fonts as $font): ?>
-                                                <option value="var(--wp--preset--font-family--<?php echo esc_attr($font['slug']); ?>)">
-                                                    <?php echo esc_html($font['name']); ?>
-                                                </option>
-                                            <?php endforeach; ?>
-                                        </select>
-                                    </p>
-                                    <div class="font-additional-options">
-                                        <select name="button_font_weight" class="font-weight-select">
+                                        <p>
+                                        <label for="text_font_weight">Font Weight:</label>
+                                        <select name="text_font_weight" class="font-weight-select">
                                             <option value="inherit">Graisse par défaut</option>
                                             <option value="100">Thin (100)</option>
                                             <option value="200">Extra Light (200)</option>
@@ -153,20 +97,27 @@ if (!defined('ABSPATH')) {
                                             <option value="800">Extra Bold (800)</option>
                                             <option value="900">Black (900)</option>
                                         </select>
-                                        <select name="button_font_style" class="font-style-select">
+                                        </p>
+                                        <p>
+                                        <label for="text_font_style">Font-style:</label>
+                                        <select name="text_font_style" class="font-style-select">
                                             <option value="inherit">Style par défaut</option>
                                             <option value="normal">Normal</option>
                                             <option value="italic">Italique</option>
                                         </select>
+                                        <p>
                                     </div>
-                                </div>
                             </div>
+                                        </div>
+                        </div>
 
+                        <div class="element-styles">
+                            <h3>Styles des éléments</h3>
                             <div class="element-group">
-                                <h4>Lien</h4>
+                                <h4>Titre</h4>
                                 <p>
                                     <label>Couleur du texte:</label>
-                                    <select name="link_text" class="color-select" data-default="var(--wp--preset--color--contrast)">
+                                    <select name="heading_text" class="color-select" data-default="var(--wp--preset--color--contrast-2)">
                                         <?php foreach ($theme_colors as $color): ?>
                                             <option value="var(--wp--preset--color--<?php echo esc_attr($color['slug']); ?>)"
                                                     data-color="<?php echo esc_attr($color['color']); ?>">
@@ -175,13 +126,10 @@ if (!defined('ABSPATH')) {
                                         <?php endforeach; ?>
                                     </select>
                                 </p>
-                            </div>
-
-                            <div class="element-group">
-                                <h4>Titre</h4>
                                 <p>
-                                    <label>Couleur du texte:</label>
-                                    <select name="heading_text" class="color-select" data-default="var(--wp--preset--color--contrast-2)">
+                                    <label>Background:</label>
+                                    <select name="heading_bg" class="color-select" data-default="tranparent">
+                                        <option value="transparent">Transparent</option>
                                         <?php foreach ($theme_colors as $color): ?>
                                             <option value="var(--wp--preset--color--<?php echo esc_attr($color['slug']); ?>)"
                                                     data-color="<?php echo esc_attr($color['color']); ?>">
@@ -203,6 +151,8 @@ if (!defined('ABSPATH')) {
                                         </select>
                                     </p>
                                     <div class="font-additional-options">
+                                        <p>
+                                        <label for="heading_font_weight">Font Weight:</label>
                                         <select name="heading_font_weight" class="font-weight-select">
                                             <option value="inherit">Graisse par défaut</option>
                                             <option value="100">Thin (100)</option>
@@ -215,14 +165,127 @@ if (!defined('ABSPATH')) {
                                             <option value="800">Extra Bold (800)</option>
                                             <option value="900">Black (900)</option>
                                         </select>
+                                        </p>
+                                        <p>
+                                        <label for="heading_font_style">Font-style:</label>
                                         <select name="heading_font_style" class="font-style-select">
                                             <option value="inherit">Style par défaut</option>
                                             <option value="normal">Normal</option>
                                             <option value="italic">Italique</option>
                                         </select>
+                                        <p>
                                     </div>
                                 </div>
                             </div>
+                            <div class="element-group">
+                                <h4>Lien</h4>
+                                <p>
+                                    <label>Couleur du texte | hover:</label>
+                                    <select name="link_text" class="color-select" data-default="var(--wp--preset--color--contrast)">
+                                        <?php foreach ($theme_colors as $color): ?>
+                                            <option value="var(--wp--preset--color--<?php echo esc_attr($color['slug']); ?>)"
+                                                    data-color="<?php echo esc_attr($color['color']); ?>">
+                                                <?php echo esc_html($color['name']); ?>
+                                            </option>
+                                        <?php endforeach; ?>
+                                    </select>
+                                    <select name="link_hover_text" class="color-select" data-default="var(--wp--preset--color--contrast)">
+                                        <?php foreach ($theme_colors as $color): ?>
+                                            <option value="var(--wp--preset--color--<?php echo esc_attr($color['slug']); ?>)"
+                                                    data-color="<?php echo esc_attr($color['color']); ?>">
+                                                <?php echo esc_html($color['name']); ?>
+                                            </option>
+                                        <?php endforeach; ?>
+                                    </select>
+                                </p>
+
+                                <p>
+                                    <label><input type="checkbox" name="link_underline" value="1"> Souligner le lien</label>
+                                </p>
+                            </div>
+                            <div class="element-group">
+                                <h4>Bouton</h4>
+                                <p>
+                                    <label>Couleur de fond | Hover :</label>
+                                    <select name="button_background" class="color-select" data-default="var(--wp--preset--color--contrast)">
+                                        <?php foreach ($theme_colors as $color): ?>
+                                            <option value="var(--wp--preset--color--<?php echo esc_attr($color['slug']); ?>)"
+                                                    data-color="<?php echo esc_attr($color['color']); ?>">
+                                                <?php echo esc_html($color['name']); ?>
+                                            </option>
+                                        <?php endforeach; ?>
+                                    </select>
+                                    <select name="button_background_hover" class="color-select" data-default="var(--wp--preset--color--contrast)">
+                                        <?php foreach ($theme_colors as $color): ?>
+                                            <option value="var(--wp--preset--color--<?php echo esc_attr($color['slug']); ?>)"
+                                                    data-color="<?php echo esc_attr($color['color']); ?>">
+                                                <?php echo esc_html($color['name']); ?>
+                                            </option>
+                                        <?php endforeach; ?>
+                                    </select>
+                                </p>
+                                <p>
+                                    <label>Couleur du texte | Hover:</label>
+                                    <select name="button_text" class="color-select" data-default="var(--wp--preset--color--base-2)">
+                                        <?php foreach ($theme_colors as $color): ?>
+                                            <option value="var(--wp--preset--color--<?php echo esc_attr($color['slug']); ?>)"
+                                                    data-color="<?php echo esc_attr($color['color']); ?>">
+                                                <?php echo esc_html($color['name']); ?>
+                                            </option>
+                                        <?php endforeach; ?>
+                                    </select>
+                                    <select name="button_text_hover" class="color-select" data-default="var(--wp--preset--color--base-2)">
+                                        <?php foreach ($theme_colors as $color): ?>
+                                            <option value="var(--wp--preset--color--<?php echo esc_attr($color['slug']); ?>)"
+                                                    data-color="<?php echo esc_attr($color['color']); ?>">
+                                                <?php echo esc_html($color['name']); ?>
+                                            </option>
+                                        <?php endforeach; ?>
+                                    </select>
+                                </p>
+                                <div class="font-settings">
+                                    <p>
+                                        <label>Police du bouton:</label>
+                                        <select name="button_font_family" class="font-select" data-default="inherit">
+                                            <option value="inherit">Police par défaut</option>
+                                            <?php foreach ($theme_fonts as $font): ?>
+                                                <option value="var(--wp--preset--font-family--<?php echo esc_attr($font['slug']); ?>)">
+                                                    <?php echo esc_html($font['name']); ?>
+                                                </option>
+                                            <?php endforeach; ?>
+                                        </select>
+                                    </p>
+                                    <div class="font-additional-options">
+                                        <p>
+                                        <label for="button_font_weight">Font Weight:</label>
+                                        <select name="button_font_weight" class="font-weight-select">
+                                            <option value="inherit">Graisse par défaut</option>
+                                            <option value="100">Thin (100)</option>
+                                            <option value="200">Extra Light (200)</option>
+                                            <option value="300">Light (300)</option>
+                                            <option value="400">Regular (400)</option>
+                                            <option value="500">Medium (500)</option>
+                                            <option value="600">Semi Bold (600)</option>
+                                            <option value="700">Bold (700)</option>
+                                            <option value="800">Extra Bold (800)</option>
+                                            <option value="900">Black (900)</option>
+                                        </select>
+                                        </p>
+                                        <p>
+                                        <label for="button_font_style">Font-style:</label>
+                                        <select name="button_font_style" class="font-style-select">
+                                            <option value="inherit">Style par défaut</option>
+                                            <option value="normal">Normal</option>
+                                            <option value="italic">Italique</option>
+                                        </select>
+                                        <p>
+                                    </div>
+                                </div>
+                            </div>
+
+
+
+ 
                         </div>
 
                         <p>

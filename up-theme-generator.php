@@ -96,6 +96,7 @@ function up_theme_generator_init() {
         $typography_manager = new UPThemeGenerator\TypographyManager();
         $section_manager = new UPThemeGenerator\SectionManager();
         $block_styles_manager = new UPThemeGenerator\BlockStylesManager();
+        $gutenberg_converter = new UPThemeGenerator\GutenbergConverter();
         
         if (UP_THEME_GENERATOR_DEBUG) {
             error_log('Toutes les classes ont été instanciées avec succès');

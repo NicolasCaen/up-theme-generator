@@ -1,3 +1,4 @@
+(function($){
 // Variables pour stocker les valeurs par défaut
 let DEFAULT_COLORS = [];
 let DEFAULT_FONT_SIZES = [];
@@ -5,20 +6,30 @@ let DEFAULT_SPACING_SIZES = [];
 
 // Fonction pour charger les valeurs par défaut
 async function loadDefaultValues() {
+    console.log(upThemeGenerator.pluginUrl + 'resources/default-theme-values/colors.json')
     try {
         // Charger les couleurs
         const colorsResponse = await fetch(upThemeGenerator.pluginUrl + 'resources/default-theme-values/colors.json');
         const colorsData = await colorsResponse.json();
+        if (!colorsResponse.ok) {
+            throw new Error(`Échec du chargement des couleurs. Statut : ${colorsResponse.status}`);
+        }
         DEFAULT_COLORS = colorsData.colors;
 
         // Charger les tailles de police
         const fontSizesResponse = await fetch(upThemeGenerator.pluginUrl + 'resources/default-theme-values/font-sizes.json');
         const fontSizesData = await fontSizesResponse.json();
+        if (!fontSizesResponse.ok) {
+            throw new Error(`Échec du chargement des tailles de police. Statut : ${fontSizesResponse.status}`);
+        }
         DEFAULT_FONT_SIZES = fontSizesData.fontSizes;
 
         // Charger les tailles d'espacement
         const spacingSizesResponse = await fetch(upThemeGenerator.pluginUrl + 'resources/default-theme-values/spacing-sizes.json');
         const spacingSizesData = await spacingSizesResponse.json();
+        if (!spacingSizesResponse.ok) {
+            throw new Error(`Échec du chargement des tailles d'espacement. Statut : ${spacingSizesResponse.status}`);
+        }
         DEFAULT_SPACING_SIZES = spacingSizesData.spacingSizes;
 
         // Initialiser les valeurs par défaut une fois chargées
@@ -585,3 +596,5 @@ jQuery(document).ready(function($) {
         }
     });
 });
+
+})(jQuery);
